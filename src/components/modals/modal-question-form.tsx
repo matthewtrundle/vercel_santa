@@ -133,6 +133,16 @@ export function ModalQuestionForm({
   const handleSubmit = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
+
+      // Only actually submit on the final step
+      if (currentStep !== 'notes') {
+        // If Enter was pressed on a non-final step, just go to next step
+        if (canProceed()) {
+          handleNext();
+        }
+        return;
+      }
+
       setIsSubmitting(true);
       setError(null);
 
@@ -159,7 +169,7 @@ export function ModalQuestionForm({
         setIsSubmitting(false);
       }
     },
-    [sessionId, name, age, interests, budget, specialNotes, onComplete]
+    [sessionId, name, age, interests, budget, specialNotes, onComplete, currentStep, canProceed, handleNext]
   );
 
   return (
@@ -359,9 +369,13 @@ export function ModalQuestionForm({
                 className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
                 rows={3}
                 maxLength={500}
+                autoFocus
               />
               <p className="text-sm text-gray-400 mt-1">
                 {specialNotes.length}/500 characters
+              </p>
+              <p className="text-xs text-gray-400 mt-2">
+                Click &quot;Find Gifts&quot; when ready, or press Enter to skip
               </p>
             </div>
           )}

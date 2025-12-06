@@ -50,18 +50,25 @@ async function updateAgentRun(
     .where(eq(agentRuns.id, runId));
 }
 
-// Helper to add a small delay for visual feedback
+// Helper to add a delay for visual feedback
 const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
+// Longer delays so users can actually see the agentic process
+const DELAYS = {
+  statusChange: 500,   // When an agent starts or completes
+  detailMessage: 800,  // Between detail messages
+  betweenAgents: 1200, // After one agent completes before next starts
+};
 
 export async function runAgentPipeline(
   sessionId: string,
   onEvent?: (event: AgentEvent) => Promise<void> | void
 ): Promise<OrchestratorResult> {
-  // Emit events with a small delay to ensure streaming is visible
-  const emit = async (event: Omit<AgentEvent, 'timestamp'>) => {
+  // Emit events with delays to ensure streaming is visible
+  const emit = async (event: Omit<AgentEvent, 'timestamp'>, delayMs: number = DELAYS.detailMessage) => {
     await onEvent?.({ ...event, timestamp: Date.now() });
-    // Small delay to ensure the event is flushed and visible on the client
-    await delay(100);
+    // Delay to ensure the event is visible on the client
+    await delay(delayMs);
   };
 
   try {
@@ -106,7 +113,7 @@ export async function runAgentPipeline(
     let imageOutput: ImageElfOutput | null = null;
 
     const imageRun = await createAgentRun(sessionId, 'image');
-    await emit({ type: 'status', agentId: 'image', status: 'running' });
+    await emit({ type: 'status', agentId: 'image', status: 'running' }, DELAYS.statusChange);
     await emit({ type: 'detail', agentId: 'image', detail: 'Loading uploaded photo...' });
     await updateAgentRun(imageRun.id, { status: 'running', startedAt: new Date() });
 
@@ -130,7 +137,7 @@ export async function runAgentPipeline(
         });
 
         await emit({ type: 'output', agentId: 'image', data: imageOutput });
-        await emit({ type: 'status', agentId: 'image', status: 'completed' });
+        await emit({ type: 'status', agentId: 'image', status: 'completed' }, DELAYS.betweenAgents);
       } catch (error) {
         console.error('Image Elf failed:', error);
         await emit({ type: 'detail', agentId: 'image', detail: 'Photo analysis skipped, using form data only' });
@@ -140,7 +147,7 @@ export async function runAgentPipeline(
           completedAt: new Date(),
           durationMs: Date.now() - imageStartTime,
         });
-        await emit({ type: 'status', agentId: 'image', status: 'completed' });
+        await emit({ type: 'status', agentId: 'image', status: 'completed' }, DELAYS.betweenAgents);
       }
     } else {
       // No photo - skip image analysis
@@ -151,12 +158,12 @@ export async function runAgentPipeline(
         completedAt: new Date(),
         durationMs: Date.now() - imageStartTime,
       });
-      await emit({ type: 'status', agentId: 'image', status: 'completed' });
+      await emit({ type: 'status', agentId: 'image', status: 'completed' }, DELAYS.betweenAgents);
     }
 
     // ===== STEP 2: Profile Elf =====
     const profileRun = await createAgentRun(sessionId, 'profile');
-    await emit({ type: 'status', agentId: 'profile', status: 'running' });
+    await emit({ type: 'status', agentId: 'profile', status: 'running' }, DELAYS.statusChange);
     await emit({ type: 'detail', agentId: 'profile', detail: 'Merging form data with image insights...' });
     await updateAgentRun(profileRun.id, { status: 'running', startedAt: new Date() });
 
@@ -201,11 +208,11 @@ export async function runAgentPipeline(
       .where(eq(kidProfiles.sessionId, sessionId));
 
     await emit({ type: 'output', agentId: 'profile', data: profileOutput });
-    await emit({ type: 'status', agentId: 'profile', status: 'completed' });
+    await emit({ type: 'status', agentId: 'profile', status: 'completed' }, DELAYS.betweenAgents);
 
     // ===== STEP 3: Gift Match Elf =====
     const giftMatchRun = await createAgentRun(sessionId, 'gift-match');
-    await emit({ type: 'status', agentId: 'gift-match', status: 'running' });
+    await emit({ type: 'status', agentId: 'gift-match', status: 'running' }, DELAYS.statusChange);
     await emit({ type: 'detail', agentId: 'gift-match', detail: 'Searching gift inventory database...' });
     await updateAgentRun(giftMatchRun.id, { status: 'running', startedAt: new Date() });
 
@@ -241,11 +248,11 @@ export async function runAgentPipeline(
     }
 
     await emit({ type: 'output', agentId: 'gift-match', data: giftMatchOutput });
-    await emit({ type: 'status', agentId: 'gift-match', status: 'completed' });
+    await emit({ type: 'status', agentId: 'gift-match', status: 'completed' }, DELAYS.betweenAgents);
 
     // ===== STEP 4: Narration Elf =====
     const narrationRun = await createAgentRun(sessionId, 'narration');
-    await emit({ type: 'status', agentId: 'narration', status: 'running' });
+    await emit({ type: 'status', agentId: 'narration', status: 'running' }, DELAYS.statusChange);
     await emit({ type: 'detail', agentId: 'narration', detail: 'Gathering gift recommendations...' });
     await updateAgentRun(narrationRun.id, { status: 'running', startedAt: new Date() });
 
@@ -277,7 +284,7 @@ export async function runAgentPipeline(
     });
 
     await emit({ type: 'output', agentId: 'narration', data: { notePreview: santaNote.slice(0, 100) } });
-    await emit({ type: 'status', agentId: 'narration', status: 'completed' });
+    await emit({ type: 'status', agentId: 'narration', status: 'completed' }, DELAYS.statusChange);
 
     // ===== Complete =====
     await db
@@ -289,6 +296,8 @@ export async function runAgentPipeline(
       })
       .where(eq(sessions.id, sessionId));
 
+    // Give users time to see the final state before transitioning
+    await delay(2000);
     await emit({ type: 'complete', agentId: 'narration' });
 
     return {
