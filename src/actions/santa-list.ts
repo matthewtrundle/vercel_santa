@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { santaLists, santaListItems, giftInventory, kidProfiles, recommendations } from '@/db/schema';
+import { santaLists, santaListItems, giftInventory, kidProfiles, recommendations, analyticsEvents } from '@/db/schema';
 import { eq, and } from 'drizzle-orm';
 import { nanoid } from 'nanoid';
 
@@ -175,6 +175,16 @@ export async function shareSantaList(
     const baseUrl = process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000';
     const shareUrl = `${baseUrl}/list/${shareSlug}`;
 
+    // Track list share event
+    await db.insert(analyticsEvents).values({
+      sessionId: santaList.sessionId,
+      eventType: 'list_shared',
+      eventData: {
+        listId: santaList.id,
+        shareSlug,
+      },
+    });
+
     return { success: true, shareUrl };
   } catch (error) {
     console.error('Error sharing Santa list:', error);
@@ -250,10 +260,45 @@ export async function togglePurchased(
   isPurchased: boolean
 ): Promise<{ success: boolean }> {
   try {
+    // Get item details for tracking
+    const [item] = await db
+      .select({
+        id: santaListItems.id,
+        giftId: santaListItems.giftId,
+        listId: santaListItems.listId,
+        giftName: giftInventory.name,
+        price: giftInventory.price,
+      })
+      .from(santaListItems)
+      .innerJoin(giftInventory, eq(santaListItems.giftId, giftInventory.id))
+      .where(eq(santaListItems.id, itemId))
+      .limit(1);
+
     await db
       .update(santaListItems)
       .set({ isPurchased })
       .where(eq(santaListItems.id, itemId));
+
+    // Track purchase event
+    if (item && isPurchased) {
+      // Get sessionId from the list
+      const [list] = await db
+        .select({ sessionId: santaLists.sessionId })
+        .from(santaLists)
+        .where(eq(santaLists.id, item.listId))
+        .limit(1);
+
+      await db.insert(analyticsEvents).values({
+        sessionId: list?.sessionId || null,
+        eventType: 'item_purchased',
+        eventData: {
+          itemId: item.id,
+          giftId: item.giftId,
+          giftName: item.giftName,
+          price: item.price,
+        },
+      });
+    }
 
     return { success: true };
   } catch (error) {

@@ -1,7 +1,7 @@
 'use server';
 
 import { db } from '@/db';
-import { sessions, kidProfiles } from '@/db/schema';
+import { sessions, kidProfiles, analyticsEvents } from '@/db/schema';
 import { eq } from 'drizzle-orm';
 import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
@@ -115,6 +115,19 @@ export async function updateSessionNicePoints(
     })
     .where(eq(sessions.id, sessionId))
     .returning();
+
+  // Track the spin result for analytics
+  await db.insert(analyticsEvents).values({
+    sessionId,
+    eventType: 'spin_completed',
+    eventData: {
+      nicePoints,
+      pointsRange: nicePoints <= 200 ? '0-200' :
+                   nicePoints <= 400 ? '201-400' :
+                   nicePoints <= 600 ? '401-600' :
+                   nicePoints <= 800 ? '601-800' : '801-1000',
+    },
+  });
 
   revalidatePath(`/workshop/${sessionId}`);
   return session ?? null;

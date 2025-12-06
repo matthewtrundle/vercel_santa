@@ -171,6 +171,15 @@ export const santaListItems = pgTable('santa_list_items', {
   createdAt: timestamp('created_at').notNull().defaultNow(),
 });
 
+// Analytics events - custom event tracking for admin dashboard
+export const analyticsEvents = pgTable('analytics_events', {
+  id: uuid('id').primaryKey().defaultRandom(),
+  sessionId: uuid('session_id').references(() => sessions.id, { onDelete: 'set null' }),
+  eventType: varchar('event_type', { length: 50 }).notNull(),
+  eventData: jsonb('event_data').$type<Record<string, unknown>>(),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+});
+
 // Relations
 export const sessionsRelations = relations(sessions, ({ one, many }) => ({
   kidProfile: one(kidProfiles, {
@@ -180,6 +189,7 @@ export const sessionsRelations = relations(sessions, ({ one, many }) => ({
   agentRuns: many(agentRuns),
   recommendations: many(recommendations),
   santaLists: many(santaLists),
+  analyticsEvents: many(analyticsEvents),
 }));
 
 export const kidProfilesRelations = relations(kidProfiles, ({ one }) => ({
@@ -230,6 +240,13 @@ export const santaListItemsRelations = relations(santaListItems, ({ one }) => ({
   }),
 }));
 
+export const analyticsEventsRelations = relations(analyticsEvents, ({ one }) => ({
+  session: one(sessions, {
+    fields: [analyticsEvents.sessionId],
+    references: [sessions.id],
+  }),
+}));
+
 // Type exports
 export type Session = typeof sessions.$inferSelect;
 export type NewSession = typeof sessions.$inferInsert;
@@ -251,3 +268,6 @@ export type NewSantaList = typeof santaLists.$inferInsert;
 
 export type SantaListItem = typeof santaListItems.$inferSelect;
 export type NewSantaListItem = typeof santaListItems.$inferInsert;
+
+export type AnalyticsEvent = typeof analyticsEvents.$inferSelect;
+export type NewAnalyticsEvent = typeof analyticsEvents.$inferInsert;

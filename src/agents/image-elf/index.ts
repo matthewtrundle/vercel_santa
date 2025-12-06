@@ -4,32 +4,18 @@ import { generateText } from 'ai';
 import { models } from '@/lib/ai';
 import type { ImageElfInput, ImageElfOutput, AgeGroupCategory } from '@/types';
 
-// Helper to fetch image and convert to base64 data URL
-async function fetchImageAsDataUrl(imageUrl: string): Promise<string> {
-  // If already a data URL, return as-is
+// Helper to prepare image for AI SDK
+// Returns either a URL object (for external URLs) or a data URL string (for data URLs)
+async function prepareImageForAI(imageUrl: string): Promise<URL | string> {
+  // If already a data URL, return as-is (AI SDK accepts data URLs)
   if (imageUrl.startsWith('data:')) {
+    console.log('[Image Elf] Using existing data URL');
     return imageUrl;
   }
 
-  try {
-    console.log('[Image Elf] Fetching image to convert to base64...');
-    const response = await fetch(imageUrl);
-
-    if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
-    }
-
-    const contentType = response.headers.get('content-type') || 'image/jpeg';
-    const arrayBuffer = await response.arrayBuffer();
-    const base64 = Buffer.from(arrayBuffer).toString('base64');
-    const dataUrl = `data:${contentType};base64,${base64}`;
-
-    console.log('[Image Elf] Image converted to base64, size:', base64.length);
-    return dataUrl;
-  } catch (error) {
-    console.error('[Image Elf] Failed to fetch image:', error);
-    throw error;
-  }
+  // For external URLs, return as URL object (AI SDK's documented approach)
+  console.log('[Image Elf] Using URL object for external image');
+  return new URL(imageUrl);
 }
 
 const IMAGE_ELF_SYSTEM_PROMPT = `You are the Vision Elf in Santa's Workshop. Your job is to analyze images to help find the perfect gift. The image could be:
@@ -87,8 +73,9 @@ export async function runImageElf(input: ImageElfInput): Promise<ImageElfOutput>
     const isBlobUrl = input.imageUrl.includes('blob.vercel-storage.com');
     console.log('[Image Elf] URL type:', isDataUrl ? 'data URL' : isBlobUrl ? 'Vercel Blob' : 'other');
 
-    // Convert external URLs to base64 data URLs for better compatibility with AI Gateway
-    const imageDataUrl = await fetchImageAsDataUrl(input.imageUrl);
+    // Prepare image for AI SDK (URL object for external URLs, data URL string for data URLs)
+    const imageData = await prepareImageForAI(input.imageUrl);
+    console.log('[Image Elf] Image prepared, type:', imageData instanceof URL ? 'URL' : 'data URL');
 
     const { text } = await generateText({
       model: models.vision,
@@ -106,7 +93,7 @@ export async function runImageElf(input: ImageElfInput): Promise<ImageElfOutput>
             },
             {
               type: 'image',
-              image: imageDataUrl,
+              image: imageData,
             },
           ],
         },

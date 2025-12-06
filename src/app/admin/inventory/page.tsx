@@ -2,6 +2,7 @@
 
 import type { ReactElement } from 'react';
 import { useState, useEffect, useCallback } from 'react';
+import Link from 'next/link';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   Gift,
@@ -20,6 +21,7 @@ import {
   AlertTriangle,
   Check,
   Snowflake,
+  BarChart3,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -503,19 +505,27 @@ export default function AdminInventoryPage(): ReactElement {
       {/* Header */}
       <div className="bg-gradient-to-r from-red-600 to-green-600 text-white py-8 px-4">
         <div className="max-w-7xl mx-auto">
-          <div className="flex items-center gap-4 mb-6">
-            <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
-              <Package className="w-8 h-8" />
+          <div className="flex items-center justify-between mb-6">
+            <div className="flex items-center gap-4">
+              <div className="w-16 h-16 bg-white/20 rounded-full flex items-center justify-center">
+                <Package className="w-8 h-8" />
+              </div>
+              <div>
+                <h1 className="text-3xl font-bold flex items-center gap-2">
+                  <Snowflake className="w-8 h-8" />
+                  Santa's Toy Inventory
+                </h1>
+                <p className="text-white/80">
+                  Manage the gifts in your workshop
+                </p>
+              </div>
             </div>
-            <div>
-              <h1 className="text-3xl font-bold flex items-center gap-2">
-                <Snowflake className="w-8 h-8" />
-                Santa's Toy Inventory
-              </h1>
-              <p className="text-white/80">
-                Manage the gifts in your workshop
-              </p>
-            </div>
+            <Link href="/admin/analytics">
+              <Button variant="secondary" className="gap-2">
+                <BarChart3 className="w-4 h-4" />
+                Analytics
+              </Button>
+            </Link>
           </div>
 
           {/* Stats */}
