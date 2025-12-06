@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import type { ReactElement, ReactNode } from 'react';
 import { Quicksand, Mountains_of_Christmas } from 'next/font/google';
-import { Analytics } from '@vercel/analytics/react';
+import { Analytics } from '@vercel/analytics/next';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { VercelToolbar } from '@vercel/toolbar/next';
 import './globals.css';
