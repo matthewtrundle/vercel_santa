@@ -50,9 +50,9 @@ describe('GiftCard', () => {
     expect(screen.getByText('toys')).toBeInTheDocument();
   });
 
-  it('displays the price formatted correctly', () => {
+  it('displays the price as Nice Points', () => {
     render(<GiftCard {...defaultProps} />);
-    expect(screen.getByText('$29.99')).toBeInTheDocument();
+    expect(screen.getByText(/30 Nice Points/)).toBeInTheDocument();
   });
 
   it('displays reasoning when provided', () => {
@@ -87,9 +87,9 @@ describe('GiftCard', () => {
     expect(screen.getByRole('button', { name: /add/i })).toBeInTheDocument();
   });
 
-  it('shows Added button when in list', () => {
+  it('shows On List button when in list', () => {
     render(<GiftCard {...defaultProps} isInList={true} />);
-    expect(screen.getByRole('button', { name: /added/i })).toBeInTheDocument();
+    expect(screen.getByRole('button', { name: /on list/i })).toBeInTheDocument();
   });
 
   it('renders affiliate link when url is provided', () => {
@@ -125,11 +125,11 @@ describe('GiftCard', () => {
     });
   });
 
-  it('calls removeFromSantaList when Added button is clicked', async () => {
+  it('calls removeFromSantaList when On List button is clicked', async () => {
     (removeFromSantaList as ReturnType<typeof vi.fn>).mockResolvedValue({ success: true });
 
     render(<GiftCard {...defaultProps} isInList={true} />);
-    const removeButton = screen.getByRole('button', { name: /added/i });
+    const removeButton = screen.getByRole('button', { name: /on list/i });
 
     fireEvent.click(removeButton);
 

@@ -13,9 +13,6 @@ import {
   ToggleLeft,
   ToggleRight,
   Package,
-  DollarSign,
-  Tag,
-  Sparkles,
   X,
   Loader2,
   AlertTriangle,
@@ -25,7 +22,7 @@ import {
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import {
   getGifts,
   getInventoryStats,
@@ -33,7 +30,6 @@ import {
   toggleGiftActive,
   createGift,
   updateGift,
-  getGiftById,
   type GiftFormData,
 } from '@/actions/inventory';
 import type { Gift as GiftType } from '@/db/schema';
@@ -141,7 +137,7 @@ function GiftForm({ gift, onClose, onSuccess }: GiftFormProps): ReactElement {
       }
 
       onSuccess();
-    } catch (err) {
+    } catch {
       setError('An error occurred. Please try again.');
     } finally {
       setIsSubmitting(false);
@@ -513,7 +509,7 @@ export default function AdminInventoryPage(): ReactElement {
               <div>
                 <h1 className="text-3xl font-bold flex items-center gap-2">
                   <Snowflake className="w-8 h-8" />
-                  Santa's Toy Inventory
+                  Santa&apos;s Toy Inventory
                 </h1>
                 <p className="text-white/80">
                   Manage the gifts in your workshop

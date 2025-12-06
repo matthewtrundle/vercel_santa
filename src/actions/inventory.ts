@@ -5,7 +5,7 @@ import { giftInventory, type NewGift, type Gift } from '@/db/schema';
 import { eq, desc, ilike, or, sql } from 'drizzle-orm';
 import { revalidatePath } from 'next/cache';
 import { z } from 'zod';
-import type { BudgetTier, GiftCategory } from '@/types';
+import type { BudgetTier } from '@/types';
 
 const giftFormSchema = z.object({
   name: z.string().min(1, 'Name is required').max(200),
@@ -30,8 +30,6 @@ export async function getGifts(options?: {
 }): Promise<{ gifts: Gift[]; total: number }> {
   const { search = '', category = '', page = 1, limit = 20 } = options || {};
   const offset = (page - 1) * limit;
-
-  let query = db.select().from(giftInventory);
 
   const conditions = [];
 

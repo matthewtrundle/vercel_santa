@@ -89,7 +89,7 @@ export function GiftJourneyModal({
     }
   }, [step]);
 
-  const handleUploadComplete = useCallback((_url: string) => {
+  const handleUploadComplete = useCallback(() => {
     setHasUploaded(true);
     setError(null);
     // Track photo upload - we don't have file details here, use defaults

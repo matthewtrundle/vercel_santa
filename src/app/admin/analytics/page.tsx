@@ -133,7 +133,7 @@ export default function AdminAnalyticsPage(): ReactElement {
   const [nicePoints, setNicePoints] = useState<Awaited<ReturnType<typeof getNicePointsDistribution>>>([]);
   const [recentSessions, setRecentSessions] = useState<Awaited<ReturnType<typeof getRecentSessions>>>([]);
   const [agentStats, setAgentStats] = useState<Awaited<ReturnType<typeof getAgentPerformanceStats>>>([]);
-  const [sessionsTrend, setSessionsTrend] = useState<Awaited<ReturnType<typeof getSessionsOverTime>>>([]);
+  const [, setSessionsTrend] = useState<Awaited<ReturnType<typeof getSessionsOverTime>>>([]);
 
   const loadData = useCallback(async () => {
     try {

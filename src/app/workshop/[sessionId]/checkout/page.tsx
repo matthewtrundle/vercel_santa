@@ -2,7 +2,7 @@
 
 import type { ReactElement } from 'react';
 import { useState, useEffect, useCallback } from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { motion } from 'motion/react';
 import Link from 'next/link';
 import {
@@ -38,7 +38,6 @@ interface WishListItem {
 
 export default function CheckoutPage(): ReactElement {
   const params = useParams();
-  const router = useRouter();
   const sessionId = params.sessionId as string;
 
   const [items, setItems] = useState<WishListItem[]>([]);

@@ -88,10 +88,11 @@ export function NicePointsSpinner({
     }, 4000);
   }, [isSpinning, rotation, segments, segmentAngle, onSpinComplete]);
 
-  // Handle external spinning state
+  // Handle external spinning state - defer to avoid setting state during effect
   useEffect(() => {
     if (externalSpinning && !isSpinning) {
-      spin();
+      const timeoutId = setTimeout(spin, 0);
+      return () => clearTimeout(timeoutId);
     }
   }, [externalSpinning, isSpinning, spin]);
 
@@ -117,7 +118,6 @@ export function NicePointsSpinner({
           <div className="relative w-full h-full">
             {segments.map((segment, index) => {
               const startAngle = index * segmentAngle;
-              const midAngle = startAngle + segmentAngle / 2;
 
               return (
                 <div

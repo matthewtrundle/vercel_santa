@@ -80,7 +80,7 @@ export const REINDEER_DATA: Reindeer[] = [
 ];
 
 // Unique scene backgrounds for each reindeer - like windows into other dimensions
-function ReindeerScene({ animation, index }: { animation?: Reindeer['animation']; index: number }): ReactElement {
+function ReindeerScene({ animation }: { animation?: Reindeer['animation']; index: number }): ReactElement {
   switch (animation) {
     case 'glow':
       // Foggy night with glowing aurora

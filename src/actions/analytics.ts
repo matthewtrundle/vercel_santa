@@ -11,7 +11,7 @@ import {
   agentRuns,
   giftInventory,
 } from '@/db/schema';
-import { eq, sql, desc, count, avg, and, gte } from 'drizzle-orm';
+import { eq, sql, desc, count, avg, gte } from 'drizzle-orm';
 
 // Track a custom analytics event
 export async function trackAnalyticsEvent(
@@ -30,8 +30,6 @@ export async function trackAnalyticsEvent(
 export async function getAnalyticsOverview() {
   const now = new Date();
   const last24Hours = new Date(now.getTime() - 24 * 60 * 60 * 1000);
-  const last7Days = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-  const last30Days = new Date(now.getTime() - 30 * 24 * 60 * 60 * 1000);
 
   // Total sessions
   const [totalSessionsResult] = await db
