@@ -8,6 +8,7 @@ import { FadeInSection } from '@/components/magical/parallax-section';
 import { WavyDivider } from '@/components/organic/snow-drift';
 import { RibbonBanner, StockingCard } from '@/components/organic/gift-tag-card';
 import { ScatteredDecorations } from '@/components/organic/scattered-decorations';
+import { AnimatedSleigh } from '@/components/magical/animated-sleigh';
 
 // Sleigh facts with Lucide icons
 const SLEIGH_FACTS = [
@@ -103,111 +104,12 @@ export function SleighSection(): ReactElement {
           </p>
         </FadeInSection>
 
-        {/* Animated Sleigh with organic movement */}
+        {/* Animated Sleigh - same as hero section for consistency */}
         <motion.div
-          className="relative h-64 mb-16"
+          className="relative h-64 mb-16 flex items-center justify-center overflow-hidden"
           style={{ x: sleighX }}
         >
-          <svg
-            viewBox="0 0 500 200"
-            className="w-full max-w-2xl h-full mx-auto"
-            fill="none"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            {/* Sleigh body */}
-            <motion.g
-              animate={{ y: [-5, 5, -5], rotate: [-1, 1, -1] }}
-              transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
-              style={{ transformOrigin: '250px 100px' }}
-            >
-              {/* Main body - more organic curves */}
-              <path
-                d="M 100 80 Q 115 55 200 55 Q 290 50 380 55 Q 425 55 435 90 Q 440 120 425 140 Q 400 150 380 145 L 150 145 Q 95 145 85 110 Q 80 90 100 80 Z"
-                fill="#C41E3A"
-                stroke="#8B0000"
-                strokeWidth="3"
-              />
-
-              {/* Gold trim - wavy */}
-              <path
-                d="M 105 82 Q 125 65 200 62 Q 290 58 375 65 Q 410 68 420 88"
-                fill="none"
-                stroke="#FFD700"
-                strokeWidth="5"
-                strokeLinecap="round"
-              />
-
-              {/* Front curl - more organic */}
-              <path
-                d="M 85 115 Q 60 135 70 160 Q 80 175 105 172 Q 115 170 110 155"
-                fill="none"
-                stroke="#FFD700"
-                strokeWidth="9"
-                strokeLinecap="round"
-              />
-
-              {/* Back - organic curve */}
-              <path
-                d="M 425 78 Q 455 55 478 78 Q 490 105 465 125"
-                fill="#C41E3A"
-                stroke="#8B0000"
-                strokeWidth="3"
-              />
-
-              {/* Runner - organic wave */}
-              <motion.path
-                d="M 75 162 Q 95 185 180 180 Q 300 178 400 180 Q 455 180 478 152"
-                fill="none"
-                stroke="#FFD700"
-                strokeWidth="9"
-                strokeLinecap="round"
-                animate={{ y: [-2, 2, -2] }}
-                transition={{ duration: 0.5, repeat: Infinity }}
-              />
-
-              {/* Gift bag - organic blob shape */}
-              <ellipse cx="350" cy="72" rx="52" ry="42" fill="#8B4513" />
-              <path
-                d="M 308 42 Q 350 15 392 42"
-                fill="none"
-                stroke="#8B4513"
-                strokeWidth="14"
-                strokeLinecap="round"
-              />
-
-              {/* Gifts peeking out - organic shapes */}
-              <rect x="318" y="48" width="22" height="22" fill="#FF69B4" rx="5" transform="rotate(-5, 329, 59)" />
-              <rect x="343" y="42" width="20" height="20" fill="#00CED1" rx="5" transform="rotate(3, 353, 52)" />
-              <rect x="368" y="52" width="17" height="17" fill="#FFD700" rx="4" transform="rotate(-2, 376, 60)" />
-
-              {/* Santa - more playful */}
-              <g transform="translate(178, 28)">
-                <ellipse cx="42" cy="62" rx="38" ry="42" fill="#C41E3A" />
-                <circle cx="42" cy="14" r="26" fill="#FFE4C4" />
-                <path d="M 14 14 Q 42 -22 74 10 L 68 26 L 14 26 Z" fill="#C41E3A" />
-                <circle cx="76" cy="4" r="11" fill="white" />
-                <rect x="8" y="22" width="64" height="9" fill="white" rx="4" />
-                <ellipse cx="42" cy="36" rx="22" ry="16" fill="white" />
-              </g>
-            </motion.g>
-
-            {/* Magic trail - varied sizes for organic feel */}
-            {[0, 1, 2, 3, 4, 5, 6, 7].map((i) => (
-              <motion.circle
-                key={i}
-                cx={75 - i * 12}
-                cy={175 + Math.sin(i * 0.8) * 6}
-                r={6 - i * 0.6}
-                fill="#FFD700"
-                animate={{ opacity: [0, 0.9, 0], scale: [0.8, 1.2, 0.8] }}
-                transition={{
-                  duration: 1.8,
-                  delay: i * 0.12,
-                  repeat: Infinity,
-                }}
-              />
-            ))}
-          </svg>
+          <AnimatedSleigh size="lg" />
         </motion.div>
 
         {/* Sleigh facts - Stocking cards scattered */}
