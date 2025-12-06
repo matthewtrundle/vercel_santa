@@ -10,7 +10,7 @@ import type { KidProfile, NewKidProfile, AgeGroupCategory, BudgetTier } from '@/
 
 const profileFormSchema = z.object({
   name: z.string().min(1, 'Name is required').max(100),
-  age: z.number().int().min(0).max(120),
+  age: z.coerce.number().int().min(0).max(120),
   interests: z.array(z.string()).min(1, 'Select at least one interest'),
   budget: z.enum(['low', 'medium', 'high']),
   specialNotes: z.string().max(500).optional(),

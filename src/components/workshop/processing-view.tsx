@@ -2,7 +2,7 @@
 
 import type { ReactElement } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Sparkles, User, Gift, FileText, Check } from 'lucide-react';
+import { Sparkles, User, Gift, FileText, Check, ArrowRight, Send } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import type { AgentStatus } from '@/types';
 
@@ -52,69 +52,112 @@ const ELVES: ElfData[] = [
   },
 ];
 
-function ElfCard({ elf, status, detail }: { elf: ElfData; status: AgentStatus; detail?: string }): ReactElement {
+interface ElfCardProps {
+  elf: ElfData;
+  status: AgentStatus;
+  detail?: string;
+  nextElf?: ElfData;
+  isLast?: boolean;
+}
+
+function ElfCard({ elf, status, detail, nextElf, isLast }: ElfCardProps): ReactElement {
   const isRunning = status === 'running';
   const isCompleted = status === 'completed';
   const isPending = status === 'pending';
 
   return (
-    <motion.div
-      className={cn(
-        'relative p-4 rounded-xl border-2 transition-all',
-        isRunning && 'border-yellow-400 bg-yellow-50 shadow-lg shadow-yellow-200/50',
-        isCompleted && 'border-green-400 bg-green-50',
-        isPending && 'border-gray-200 bg-gray-50 opacity-50'
-      )}
-      animate={isRunning ? { scale: [1, 1.02, 1] } : {}}
-      transition={{ duration: 1.5, repeat: isRunning ? Infinity : 0 }}
-    >
-      <div className="flex items-center gap-3">
-        {/* Elf avatar */}
-        <motion.div
-          className={cn(
-            'w-12 h-12 rounded-full flex items-center justify-center text-2xl',
-            `bg-gradient-to-br ${elf.color}`
-          )}
-          animate={isRunning ? { rotate: [0, 10, -10, 0] } : {}}
-          transition={{ duration: 0.5, repeat: isRunning ? Infinity : 0 }}
-        >
-          {isCompleted ? (
-            <Check className="w-6 h-6 text-white" />
-          ) : (
-            <span>{elf.emoji}</span>
-          )}
-        </motion.div>
-
-        <div className="flex-1 min-w-0">
-          <div className="flex items-center gap-2">
-            <h4 className="font-semibold text-gray-900">{elf.name}</h4>
-            {isRunning && (
-              <motion.div
-                className="flex gap-1"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-              >
-                {[0, 1, 2].map((i) => (
-                  <motion.div
-                    key={i}
-                    className="w-1.5 h-1.5 rounded-full bg-yellow-500"
-                    animate={{ scale: [1, 1.5, 1] }}
-                    transition={{
-                      duration: 0.6,
-                      repeat: Infinity,
-                      delay: i * 0.2,
-                    }}
-                  />
-                ))}
-              </motion.div>
+    <div className="relative">
+      <motion.div
+        className={cn(
+          'relative p-4 rounded-xl border-2 transition-all',
+          isRunning && 'border-yellow-400 bg-yellow-50 shadow-lg shadow-yellow-200/50',
+          isCompleted && 'border-green-400 bg-green-50',
+          isPending && 'border-gray-200 bg-gray-50 opacity-50'
+        )}
+        animate={isRunning ? { scale: [1, 1.02, 1] } : {}}
+        transition={{ duration: 1.5, repeat: isRunning ? Infinity : 0 }}
+      >
+        <div className="flex items-center gap-3">
+          {/* Elf avatar */}
+          <motion.div
+            className={cn(
+              'w-12 h-12 rounded-full flex items-center justify-center text-2xl',
+              `bg-gradient-to-br ${elf.color}`
             )}
+            animate={isRunning ? { rotate: [0, 10, -10, 0] } : {}}
+            transition={{ duration: 0.5, repeat: isRunning ? Infinity : 0 }}
+          >
+            {isCompleted ? (
+              <Check className="w-6 h-6 text-white" />
+            ) : (
+              <span>{elf.emoji}</span>
+            )}
+          </motion.div>
+
+          <div className="flex-1 min-w-0">
+            <div className="flex items-center gap-2">
+              <h4 className="font-semibold text-gray-900">{elf.name}</h4>
+              {isRunning && (
+                <motion.div
+                  className="flex gap-1"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                >
+                  {[0, 1, 2].map((i) => (
+                    <motion.div
+                      key={i}
+                      className="w-1.5 h-1.5 rounded-full bg-yellow-500"
+                      animate={{ scale: [1, 1.5, 1] }}
+                      transition={{
+                        duration: 0.6,
+                        repeat: Infinity,
+                        delay: i * 0.2,
+                      }}
+                    />
+                  ))}
+                </motion.div>
+              )}
+            </div>
+            <p className="text-sm text-gray-600 truncate">
+              {detail || elf.description}
+            </p>
           </div>
-          <p className="text-sm text-gray-600 truncate">
-            {detail || elf.description}
-          </p>
         </div>
-      </div>
-    </motion.div>
+      </motion.div>
+
+      {/* Next step connector */}
+      {isCompleted && !isLast && nextElf && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-center gap-2 py-2"
+        >
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-green-100 to-blue-100 rounded-full border border-green-200">
+            <Send className="w-3 h-3 text-green-600" />
+            <span className="text-xs font-medium text-green-700">
+              Sending to {nextElf.name}
+            </span>
+            <ArrowRight className="w-3 h-3 text-green-600" />
+          </div>
+        </motion.div>
+      )}
+
+      {/* Final step indicator */}
+      {isCompleted && isLast && (
+        <motion.div
+          initial={{ opacity: 0, y: -5 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-center gap-2 py-2"
+        >
+          <div className="flex items-center gap-1.5 px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full border border-green-300">
+            <Sparkles className="w-3 h-3 text-green-600" />
+            <span className="text-xs font-medium text-green-700">
+              Magic complete! ✨
+            </span>
+          </div>
+        </motion.div>
+      )}
+    </div>
   );
 }
 
@@ -165,13 +208,15 @@ export function ProcessingView({
           Elves at Work
         </h3>
 
-        <div className="space-y-3">
-          {ELVES.map((elf) => (
+        <div className="space-y-1">
+          {ELVES.map((elf, index) => (
             <ElfCard
               key={elf.id}
               elf={elf}
               status={statuses[elf.id] || 'pending'}
               detail={details[elf.id]}
+              nextElf={index < ELVES.length - 1 ? ELVES[index + 1] : undefined}
+              isLast={index === ELVES.length - 1}
             />
           ))}
         </div>
