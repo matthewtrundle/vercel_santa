@@ -13,7 +13,7 @@ import type {
 } from '@/types';
 import type { Gift } from '@/db/schema';
 
-const GIFT_MATCH_SYSTEM_PROMPT = `You are the Gift Match Elf in Santa's Workshop. Your job is to rank gift candidates based on how well they match a child's profile.
+const GIFT_MATCH_SYSTEM_PROMPT = `You are the Gift Match Elf in Santa's Workshop. Your job is to rank gift candidates based on how well they match the recipient's profile.
 
 RANKING CRITERIA:
 1. Interest alignment (40%) - How well does gift match stated interests?
@@ -130,9 +130,9 @@ export async function runGiftMatchElf(
         },
         {
           role: 'user',
-          content: `Rank these gifts for the following child profile:
+          content: `Rank these gifts for the following recipient profile:
 
-CHILD PROFILE:
+RECIPIENT PROFILE:
 - Name: ${profile.name}
 - Age Group: ${profile.ageGroup}
 - Primary Interests: ${profile.primaryInterests.join(', ')}
@@ -171,7 +171,7 @@ Rank and return the top 6-8 best matching gifts as a JSON array.`,
         return {
           gift,
           score: Math.max(0, Math.min(100, ranking.score)),
-          reasoning: ranking.reasoning || 'Great match for this child!',
+          reasoning: ranking.reasoning || 'Great match for this recipient!',
           matchedInterests: ranking.matchedInterests || [],
         };
       })

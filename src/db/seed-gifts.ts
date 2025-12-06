@@ -1,6 +1,210 @@
 import { db } from './index';
 import { giftInventory } from './schema';
 
+// Curated Unsplash image URLs by category and gift type
+const giftImages: Record<string, Record<string, string>> = {
+  educational: {
+    'World Map Puzzle': 'https://images.unsplash.com/photo-1526778548025-fa2f459cd5c1?w=400&h=400&fit=crop',
+    'Microscope Kit': 'https://images.unsplash.com/photo-1516571748831-5d81767b788d?w=400&h=400&fit=crop',
+    'Math Flash Cards': 'https://images.unsplash.com/photo-1596495578065-6e0763fa1178?w=400&h=400&fit=crop',
+    'Solar System Model Kit': 'https://images.unsplash.com/photo-1614732414444-096e5f1122d5?w=400&h=400&fit=crop',
+    'Coding Robot': 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=400&fit=crop',
+    'Chemistry Set': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=400&fit=crop',
+    'History Timeline Cards': 'https://images.unsplash.com/photo-1461360370896-922624d12a74?w=400&h=400&fit=crop',
+    'Language Learning Game': 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=400&fit=crop',
+    'Anatomy Model': 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=400&h=400&fit=crop',
+    'Electricity Kit': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400&h=400&fit=crop',
+  },
+  creative: {
+    'Deluxe Art Set': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
+    'Pottery Wheel Kit': 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=400&fit=crop',
+    'Jewelry Making Set': 'https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?w=400&h=400&fit=crop',
+    'Origami Paper Pack': 'https://images.unsplash.com/photo-1574246604907-db69e30ddb97?w=400&h=400&fit=crop',
+    'Tie-Dye Kit': 'https://images.unsplash.com/photo-1621600411688-4be93cd68504?w=400&h=400&fit=crop',
+    'Sketchbook Collection': 'https://images.unsplash.com/photo-1544716278-ca5e3f4abd8c?w=400&h=400&fit=crop',
+    'Candle Making Kit': 'https://images.unsplash.com/photo-1602607135909-7b6c5a5c8ec8?w=400&h=400&fit=crop',
+    'Sewing Machine for Kids': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop',
+    'Calligraphy Set': 'https://images.unsplash.com/photo-1455390582262-044cdead277a?w=400&h=400&fit=crop',
+    'Play-Doh Mega Pack': 'https://images.unsplash.com/photo-1560421683-6856ea585c78?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
+  },
+  outdoor: {
+    'Kids Camping Set': 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400&h=400&fit=crop',
+    'Binoculars': 'https://images.unsplash.com/photo-1502920917128-1aa500764cbd?w=400&h=400&fit=crop',
+    'Gardening Kit': 'https://images.unsplash.com/photo-1416879595882-3373a0480b5b?w=400&h=400&fit=crop',
+    'Kite': 'https://images.unsplash.com/photo-1601758003122-53c40e686a19?w=400&h=400&fit=crop',
+    'Bug Catching Kit': 'https://images.unsplash.com/photo-1470058869958-2a77ade41c02?w=400&h=400&fit=crop',
+    'Water Balloon Launcher': 'https://images.unsplash.com/photo-1534423861386-85a16f5d13fd?w=400&h=400&fit=crop',
+    'Frisbee Set': 'https://images.unsplash.com/photo-1594495894542-a46cc73e081a?w=400&h=400&fit=crop',
+    'Nature Explorer Backpack': 'https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400&h=400&fit=crop',
+    'Sandbox Toys Set': 'https://images.unsplash.com/photo-1489710437720-ebb67ec84dd2?w=400&h=400&fit=crop',
+    'Trampoline': 'https://images.unsplash.com/photo-1626775238053-4315516eedc9?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1504280390367-361c6d9f38f4?w=400&h=400&fit=crop',
+  },
+  tech: {
+    'Kids Tablet': 'https://images.unsplash.com/photo-1544244015-0df4b3ffc6b0?w=400&h=400&fit=crop',
+    'Digital Camera': 'https://images.unsplash.com/photo-1516035069371-29a1b244cc32?w=400&h=400&fit=crop',
+    'Walkie Talkies': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop',
+    'Kids Smartwatch': 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400&h=400&fit=crop',
+    'Drone for Beginners': 'https://images.unsplash.com/photo-1507582020474-9a35b7d455d9?w=400&h=400&fit=crop',
+    'VR Headset': 'https://images.unsplash.com/photo-1617802690992-15d93263d3a9?w=400&h=400&fit=crop',
+    'Bluetooth Speaker': 'https://images.unsplash.com/photo-1608043152269-423dbba4e7e1?w=400&h=400&fit=crop',
+    'LED Strip Lights': 'https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=400&h=400&fit=crop',
+    'Karaoke Machine': 'https://images.unsplash.com/photo-1478737270239-2f02b77fc618?w=400&h=400&fit=crop',
+    'Game Controller': 'https://images.unsplash.com/photo-1592840496694-26d035b52b48?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop',
+  },
+  books: {
+    'Fairy Tales Collection': 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=400&fit=crop',
+    'Adventure Novel Series': 'https://images.unsplash.com/photo-1481627834876-b7833e8f5570?w=400&h=400&fit=crop',
+    'Science Encyclopedia': 'https://images.unsplash.com/photo-1532012197267-da84d127e765?w=400&h=400&fit=crop',
+    'Comic Book Collection': 'https://images.unsplash.com/photo-1612036782180-6f0b6cd846fe?w=400&h=400&fit=crop',
+    'Joke Book': 'https://images.unsplash.com/photo-1544947950-fa07a98d237f?w=400&h=400&fit=crop',
+    'Diary with Lock': 'https://images.unsplash.com/photo-1517842645767-c639042777db?w=400&h=400&fit=crop',
+    'Cookbook for Kids': 'https://images.unsplash.com/photo-1466637574441-749b8f19452f?w=400&h=400&fit=crop',
+    'Animal Encyclopedia': 'https://images.unsplash.com/photo-1507842217343-583bb7270b66?w=400&h=400&fit=crop',
+    'Poetry Collection': 'https://images.unsplash.com/photo-1476275466078-4007374efbbe?w=400&h=400&fit=crop',
+    'Board Books Set': 'https://images.unsplash.com/photo-1588666309990-d68f08e3d4a6?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1512820790803-83ca734da794?w=400&h=400&fit=crop',
+  },
+  games: {
+    'Strategy Board Game': 'https://images.unsplash.com/photo-1611891487122-207579d67d98?w=400&h=400&fit=crop',
+    'Card Game Collection': 'https://images.unsplash.com/photo-1529480780361-0b69927ccb89?w=400&h=400&fit=crop',
+    'Puzzle Box Set': 'https://images.unsplash.com/photo-1486572788966-cfd3df1f5b42?w=400&h=400&fit=crop',
+    'Trivia Game': 'https://images.unsplash.com/photo-1606503153255-59d7d2f6c3e4?w=400&h=400&fit=crop',
+    'Marble Run Set': 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=400&h=400&fit=crop',
+    'Memory Matching Game': 'https://images.unsplash.com/photo-1632501641765-e568d28b0015?w=400&h=400&fit=crop',
+    'Cooperative Adventure Game': 'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?w=400&h=400&fit=crop',
+    'Word Game': 'https://images.unsplash.com/photo-1585504256554-5c3a54e6d21c?w=400&h=400&fit=crop',
+    'Video Game (Age Appropriate)': 'https://images.unsplash.com/photo-1493711662062-fa541f7f2f60?w=400&h=400&fit=crop',
+    'Dice Games Set': 'https://images.unsplash.com/photo-1522069213448-443a614da9b6?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1611891487122-207579d67d98?w=400&h=400&fit=crop',
+  },
+  sports: {
+    'Soccer Ball': 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&h=400&fit=crop',
+    'Basketball Hoop': 'https://images.unsplash.com/photo-1546519638-68e109498ffc?w=400&h=400&fit=crop',
+    'Tennis Racket Set': 'https://images.unsplash.com/photo-1554068865-24cecd4e34b8?w=400&h=400&fit=crop',
+    'Skateboard': 'https://images.unsplash.com/photo-1547447134-cd3f5c716030?w=400&h=400&fit=crop',
+    'Roller Skates': 'https://images.unsplash.com/photo-1593786324420-7fded31c20db?w=400&h=400&fit=crop',
+    'Baseball Glove and Ball': 'https://images.unsplash.com/photo-1527234988531-40868c1e5f5f?w=400&h=400&fit=crop',
+    'Jump Rope': 'https://images.unsplash.com/photo-1434682881908-b43d0467b798?w=400&h=400&fit=crop',
+    'Golf Set for Kids': 'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=400&h=400&fit=crop',
+    'Scooter': 'https://images.unsplash.com/photo-1565538810643-b5bdb714032a?w=400&h=400&fit=crop',
+    'Swimming Goggles and Cap': 'https://images.unsplash.com/photo-1530549387789-4c1017266635?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1579952363873-27f3bade9f55?w=400&h=400&fit=crop',
+  },
+  music: {
+    'Acoustic Guitar': 'https://images.unsplash.com/photo-1510915361894-db8b60106cb1?w=400&h=400&fit=crop',
+    'Keyboard Piano': 'https://images.unsplash.com/photo-1520523839897-bd0b52f945a0?w=400&h=400&fit=crop',
+    'Drum Set': 'https://images.unsplash.com/photo-1519892300165-cb5542fb47c7?w=400&h=400&fit=crop',
+    'Ukulele': 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=400&fit=crop',
+    'Recorder': 'https://images.unsplash.com/photo-1516924962500-2b4b3b99ea02?w=400&h=400&fit=crop',
+    'Xylophone': 'https://images.unsplash.com/photo-1514119412350-e174d90d280e?w=400&h=400&fit=crop',
+    'Harmonica': 'https://images.unsplash.com/photo-1564186763535-ebb21ef5277f?w=400&h=400&fit=crop',
+    'Music Box Collection': 'https://images.unsplash.com/photo-1507838153414-b4b713384a76?w=400&h=400&fit=crop',
+    'Headphones': 'https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400&h=400&fit=crop',
+    'DJ Mixer Toy': 'https://images.unsplash.com/photo-1571330735066-03aaa9429d89?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1511379938547-c1f69419868d?w=400&h=400&fit=crop',
+  },
+  building: {
+    'LEGO Classic Set': 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400&h=400&fit=crop',
+    'Magnetic Tiles': 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    'Wooden Blocks Set': 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=400&h=400&fit=crop',
+    "K'NEX Set": 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    'Model Car Kit': 'https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=400&h=400&fit=crop',
+    'Train Set': 'https://images.unsplash.com/photo-1527259191233-c59e19c26fe3?w=400&h=400&fit=crop',
+    'Marble Maze Builder': 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=400&h=400&fit=crop',
+    'Architecture Set': 'https://images.unsplash.com/photo-1503387762-592deb58ef4e?w=400&h=400&fit=crop',
+    'Gears and Motors Kit': 'https://images.unsplash.com/photo-1518770660439-4636190af475?w=400&h=400&fit=crop',
+    'Fort Building Kit': 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=400&h=400&fit=crop',
+  },
+  dolls: {
+    'Fashion Doll': 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    'Baby Doll Set': 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=400&h=400&fit=crop',
+    'Dollhouse': 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    'Action Figure Set': 'https://images.unsplash.com/photo-1608278047522-58806a6fd7bd?w=400&h=400&fit=crop',
+    'Stuffed Animal': 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    'Puppet Set': 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    'Paper Dolls': 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    'Character Plush': 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    'Doll Clothes Set': 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+    'Collectible Figures': 'https://images.unsplash.com/photo-1608278047522-58806a6fd7bd?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1558060370-d644479cb6f7?w=400&h=400&fit=crop',
+  },
+  vehicles: {
+    'Remote Control Car': 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=400&h=400&fit=crop',
+    'Toy Train Set': 'https://images.unsplash.com/photo-1527259191233-c59e19c26fe3?w=400&h=400&fit=crop',
+    'Monster Truck': 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=400&h=400&fit=crop',
+    'Airplane Model': 'https://images.unsplash.com/photo-1474302770737-173ee21bab63?w=400&h=400&fit=crop',
+    'Fire Truck': 'https://images.unsplash.com/photo-1565608438257-fac3c27beb36?w=400&h=400&fit=crop',
+    'Construction Vehicles Set': 'https://images.unsplash.com/photo-1581235720704-06d3acfcb36f?w=400&h=400&fit=crop',
+    'Race Track Set': 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=400&h=400&fit=crop',
+    'Boat Toy': 'https://images.unsplash.com/photo-1605281317010-fe5ffe798166?w=400&h=400&fit=crop',
+    'Helicopter': 'https://images.unsplash.com/photo-1473968512647-3e447244af8f?w=400&h=400&fit=crop',
+    'Hot Wheels Collection': 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=400&h=400&fit=crop',
+  },
+  animals: {
+    'Pet Care Play Set': 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=400&h=400&fit=crop',
+    'Dinosaur Figures': 'https://images.unsplash.com/photo-1519174639603-8b39c65ea36c?w=400&h=400&fit=crop',
+    'Ocean Animals Set': 'https://images.unsplash.com/photo-1544551763-46a013bb70d5?w=400&h=400&fit=crop',
+    'Farm Animals Set': 'https://images.unsplash.com/photo-1516467508483-a7212febe31a?w=400&h=400&fit=crop',
+    'Safari Animals': 'https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=400&h=400&fit=crop',
+    'Butterfly Garden Kit': 'https://images.unsplash.com/photo-1452570053594-1b985d6ea890?w=400&h=400&fit=crop',
+    'Ant Farm': 'https://images.unsplash.com/photo-1470058869958-2a77ade41c02?w=400&h=400&fit=crop',
+    'Bird Feeder Kit': 'https://images.unsplash.com/photo-1520087619250-584c0cbd35e8?w=400&h=400&fit=crop',
+    'Horse Stable Set': 'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=400&h=400&fit=crop',
+    'Interactive Pet Toy': 'https://images.unsplash.com/photo-1548767797-d8c844163c4c?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1474511320723-9a56873571b7?w=400&h=400&fit=crop',
+  },
+  science: {
+    'Volcano Kit': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=400&fit=crop',
+    'Telescope': 'https://images.unsplash.com/photo-1465101162946-4377e57745c3?w=400&h=400&fit=crop',
+    'Crystal Growing Kit': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=400&fit=crop',
+    'Robot Building Kit': 'https://images.unsplash.com/photo-1485827404703-89b55fcc595e?w=400&h=400&fit=crop',
+    'Weather Station': 'https://images.unsplash.com/photo-1561484930-998b6a7b22e8?w=400&h=400&fit=crop',
+    'Fossil Dig Kit': 'https://images.unsplash.com/photo-1589825743681-e04f128dfee3?w=400&h=400&fit=crop',
+    'Slime Lab': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=400&fit=crop',
+    'Magnet Experiment Set': 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=400&fit=crop',
+    'DNA Model Kit': 'https://images.unsplash.com/photo-1530026405186-ed1f139313f8?w=400&h=400&fit=crop',
+    'Solar Panel Kit': 'https://images.unsplash.com/photo-1509391366360-2e959784a276?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1532094349884-543bc11b234d?w=400&h=400&fit=crop',
+  },
+  art: {
+    'Watercolor Paint Set': 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=400&fit=crop',
+    'Canvas and Easel': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
+    'Clay Modeling Kit': 'https://images.unsplash.com/photo-1565193566173-7a0ee3dbe261?w=400&h=400&fit=crop',
+    'Pastel Chalk Set': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
+    'Scratch Art Paper': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
+    'Acrylic Paint Set': 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=400&fit=crop',
+    'Drawing Mannequin': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
+    'Stencil Collection': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
+    'Rock Painting Kit': 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
+    'Spray Paint Art Set': 'https://images.unsplash.com/photo-1460661419201-fd4cecdf8a8b?w=400&h=400&fit=crop',
+    default: 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop',
+  },
+};
+
+// Helper function to get image URL for a gift
+function getGiftImageUrl(category: string, giftName: string): string {
+  const categoryImages = giftImages[category];
+  if (!categoryImages) {
+    return 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop';
+  }
+
+  // Try to find exact match first
+  for (const [name, url] of Object.entries(categoryImages)) {
+    if (giftName.includes(name) || name.includes(giftName.replace(/^(Deluxe |Mini |Pro |Ultimate |Basic |Premium )/, ''))) {
+      return url;
+    }
+  }
+
+  // Fall back to category default
+  return categoryImages.default || 'https://images.unsplash.com/photo-1513364776144-60967b0f800f?w=400&h=400&fit=crop';
+}
+
 // Gift templates by category
 const giftTemplates: Record<
   string,
@@ -228,7 +432,7 @@ function generateGiftVariations() {
           ageGroups,
           priceRange: tier,
           price: adjustedPrice.toFixed(2),
-          imageUrl: `https://placehold.co/400x400/e8f5e9/2e7d32?text=${encodeURIComponent(category)}`,
+          imageUrl: getGiftImageUrl(category, template.name),
           tags: [...template.tags, tier],
         });
       }
@@ -260,7 +464,7 @@ function generateGiftVariations() {
         ageGroups: item.ageGroups,
         priceRange: tier,
         price: adjustedPrice,
-        imageUrl: `https://placehold.co/400x400/e8f5e9/2e7d32?text=${encodeURIComponent(item.category)}`,
+        imageUrl: getGiftImageUrl(item.category, item.name),
         tags: [...item.tags, tier],
       });
     }

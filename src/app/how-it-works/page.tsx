@@ -15,20 +15,20 @@ import { Card, CardContent } from '@/components/ui/card';
 
 export const metadata = {
   title: 'How It Works | Santa\'s AI Workshop',
-  description: 'Learn how our AI elves help find the perfect gifts for your child',
+  description: 'Learn how our AI elves help find the perfect gifts for your loved ones',
 };
 
 const steps = [
   {
     number: 1,
     icon: Camera,
-    title: 'Upload a Photo',
+    title: 'Upload a Photo or Draw',
     description:
-      'Share a photo of your child. Our AI Image Elf will analyze it to spot interests, hobbies, and personality clues from what they\'re wearing, playing with, or surrounded by.',
+      'Share a photo or draw what you\'re looking for! Our AI Image Elf will analyze it to spot interests, hobbies, and personality clues.',
     tips: [
       'Photos showing hobbies or activities work best',
+      'Draw something they love or want',
       'Room or play area shots help identify interests',
-      'Multiple children? Upload one photo per child',
     ],
   },
   {
@@ -36,7 +36,7 @@ const steps = [
     icon: MessageSquare,
     title: 'Answer Questions',
     description:
-      'Tell us about your child\'s age, interests, and your budget. Our Profile Elf combines this with photo insights to build a complete picture.',
+      'Tell us about their age, interests, and your budget. Our Profile Elf combines this with photo insights to build a complete picture.',
     tips: [
       'Be specific about interests (e.g., "LEGO Star Wars" vs just "LEGO")',
       'Mention any sensory preferences or restrictions',
@@ -82,7 +82,7 @@ const elves = [
     emoji: '📋',
     role: 'Data Curator',
     description:
-      'Combines photo insights with your answers to build a comprehensive child profile.',
+      'Combines photo insights with your answers to build a comprehensive gift profile.',
   },
   {
     name: 'Gift Match Elf',
@@ -134,7 +134,7 @@ export default function HowItWorksPage(): ReactElement {
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
             Our team of specialized AI elves work together to find the perfect
-            gifts for your child. Here&apos;s how the magic happens.
+            gifts for your loved ones. Here&apos;s how the magic happens.
           </p>
           <div className="flex flex-wrap justify-center gap-6">
             <div className="flex items-center gap-2 text-gray-600">
@@ -261,7 +261,7 @@ export default function HowItWorksPage(): ReactElement {
           </h2>
           <p className="text-white/90 mb-8 max-w-xl mx-auto">
             It only takes 2 minutes to get personalized gift recommendations
-            for your child.
+            for your loved ones.
           </p>
           <Link href="/workshop/start">
             <Button

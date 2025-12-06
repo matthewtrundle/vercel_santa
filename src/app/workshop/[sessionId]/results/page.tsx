@@ -10,6 +10,7 @@ import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GiftCard } from '@/components/results/gift-card';
 import { ShareButton } from '@/components/results/share-button';
+import { ResultsPageClient } from '@/components/results/results-page-client';
 
 interface ResultsPageProps {
   params: Promise<{ sessionId: string }>;
@@ -88,18 +89,19 @@ export default async function ResultsPage({
   }
 
   const { profile, recommendations: recs, santaNote, listItemGiftIds } = data;
-  const childName = profile?.name ?? 'your child';
+  const recipientName = profile?.name ?? 'your recipient';
   const hasRealData = recs.length > 0;
 
   return (
-    <div className="max-w-4xl mx-auto py-8">
+    <ResultsPageClient sessionId={sessionId} initialListCount={listItemGiftIds.length}>
+    <div className="max-w-4xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="text-center mb-10">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-red-100 to-green-100 mb-4">
           <Gift className="w-10 h-10 text-red-600" />
         </div>
         <h1 className="text-3xl font-bold text-gray-900 mb-2">
-          Perfect Gifts for {childName}!
+          Perfect Gifts for {recipientName}!
         </h1>
         <p className="text-gray-600">
           Our elves found these amazing recommendations just for you
@@ -118,7 +120,7 @@ export default async function ResultsPage({
           <p className="text-gray-700 italic leading-relaxed whitespace-pre-wrap">
             {santaNote || (
               `"Ho ho ho! My elves have been working hard to find the perfect
-              gifts for ${childName}! I can see they love ${profile?.interests?.slice(0, 2).join(' and ') || 'so many wonderful things'}
+              gifts for ${recipientName}! I can see they love ${profile?.interests?.slice(0, 2).join(' and ') || 'so many wonderful things'}
               . These recommendations are handpicked just for them. Remember, the
               best gift is always given with love! Merry Christmas!"`
             )}
@@ -192,11 +194,12 @@ export default async function ResultsPage({
       </div>
 
       {/* AI-generated disclaimer */}
-      <div className="mt-8 text-center">
+      <div className="mt-8 text-center pb-20">
         <p className="text-sm text-gray-400">
           Recommendations powered by AI. Prices and availability may vary.
         </p>
       </div>
     </div>
+    </ResultsPageClient>
   );
 }

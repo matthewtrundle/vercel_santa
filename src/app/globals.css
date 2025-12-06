@@ -1,14 +1,32 @@
 @import "tailwindcss";
 
 :root {
-  /* Holiday color palette */
-  --santa-red: #c41e3a;
+  /* Primary Holiday Colors - Reds */
+  --santa-red: #C41E3A;
   --santa-red-dark: #9e1830;
-  --christmas-green: #228b22;
+  --christmas-red: #B22222;
+  --candy-red: #FF6B6B;
+
+  /* Greens */
+  --christmas-green: #228B22;
   --christmas-green-dark: #1a6b1a;
-  --gold: #ffd700;
-  --snow-white: #fffafa;
+  --holly-green: #228B22;
+  --pine-green: #01796F;
+  --mint-green: #98FB98;
+
+  /* Golds */
+  --gold: #FFD700;
+  --star-gold: #FFD700;
+  --warm-gold: #DAA520;
+
+  /* Snow/Ice */
+  --snow-white: #FFFAFA;
+  --ice-blue: #B0E0E6;
+  --frost-blue: #E0FFFF;
+
+  /* Night Sky */
   --midnight-blue: #191970;
+  --aurora-purple: #9370DB;
 
   --background: #fffafa;
   --foreground: #1a1a2e;
@@ -47,6 +65,43 @@ body {
     transform: translateY(110vh) translateX(20px);
     opacity: 0.3;
   }
+}
+
+/* Sleigh flight path */
+@keyframes sleighFlight {
+  0% { transform: translateX(-100vw) translateY(20vh); }
+  50% { transform: translateX(50vw) translateY(10vh); }
+  100% { transform: translateX(150vw) translateY(25vh); }
+}
+
+/* Gentle floating effect */
+@keyframes float {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+
+/* Twinkling effect */
+@keyframes twinkle {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.3; }
+}
+
+/* Bounce animation */
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+/* Pulse glow */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 5px currentColor, 0 0 10px currentColor; }
+  50% { box-shadow: 0 0 15px currentColor, 0 0 25px currentColor; }
+}
+
+/* Star sparkle */
+@keyframes sparkle {
+  0%, 100% { transform: scale(1) rotate(0deg); opacity: 1; }
+  50% { transform: scale(1.2) rotate(180deg); opacity: 0.8; }
 }
 
 /* Holiday gradient backgrounds */
@@ -93,4 +148,75 @@ body {
 *:focus-visible {
   outline: 2px solid var(--santa-red);
   outline-offset: 2px;
+}
+
+/* Night sky gradient for hero */
+.night-sky-gradient {
+  background: linear-gradient(
+    180deg,
+    var(--midnight-blue) 0%,
+    #2a2a5a 40%,
+    #3a3a7a 70%,
+    var(--aurora-purple) 100%
+  );
+}
+
+/* Aurora effect */
+.aurora-gradient {
+  background: linear-gradient(
+    135deg,
+    rgba(147, 112, 219, 0.3) 0%,
+    rgba(0, 191, 255, 0.2) 50%,
+    rgba(144, 238, 144, 0.2) 100%
+  );
+}
+
+/* Snow ground effect */
+.snow-ground {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    var(--snow-white) 20%,
+    var(--snow-white) 100%
+  );
+}
+
+/* Floating animation utility */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+/* Twinkle animation utility */
+.animate-twinkle {
+  animation: twinkle 2s ease-in-out infinite;
+}
+
+/* Bounce animation utility */
+.animate-bounce-slow {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+/* Sparkle animation utility */
+.animate-sparkle {
+  animation: sparkle 3s ease-in-out infinite;
+}
+
+/* Smooth scroll behavior */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Reduce motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  html {
+    scroll-behavior: auto;
+  }
 }

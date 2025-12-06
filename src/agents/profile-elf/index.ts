@@ -98,9 +98,9 @@ export async function runProfileElf(input: ProfileElfInput): Promise<ProfileElfO
         },
         {
           role: 'user',
-          content: `Merge the following data to create a comprehensive kid profile:
+          content: `Merge the following data to create a comprehensive gift recipient profile:
 
-PARENT-PROVIDED DATA (higher priority):
+USER-PROVIDED DATA (higher priority):
 - Name: ${formData.name}
 - Age: ${formData.age} years old
 - Interests selected: ${formData.interests.join(', ')}
