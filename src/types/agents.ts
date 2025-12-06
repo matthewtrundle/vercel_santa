@@ -88,11 +88,12 @@ export interface NarrationElfInput {
 
 // Agent orchestration types
 export interface AgentEvent {
-  type: 'status' | 'output' | 'error' | 'complete';
+  type: 'status' | 'output' | 'error' | 'complete' | 'detail';
   agentId: 'image' | 'profile' | 'gift-match' | 'narration';
   status?: AgentStatus;
   data?: unknown;
   error?: string;
+  detail?: string; // Behind-the-scenes detail message
   timestamp: number;
 }
 

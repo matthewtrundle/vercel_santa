@@ -30,6 +30,8 @@ export default function ProcessingPage(): ReactElement {
     narration: 'pending',
   });
 
+  const [details, setDetails] = useState<Record<string, string>>({});
+
   const [error, setError] = useState<string | null>(null);
   const [isComplete, setIsComplete] = useState(false);
 
@@ -81,6 +83,13 @@ export default function ProcessingPage(): ReactElement {
                 setStatuses((prev) => ({
                   ...prev,
                   [event.agentId]: event.status!,
+                }));
+              }
+
+              if (event.type === 'detail' && event.agentId && event.detail) {
+                setDetails((prev) => ({
+                  ...prev,
+                  [event.agentId]: event.detail!,
                 }));
               }
 
@@ -169,7 +178,7 @@ export default function ProcessingPage(): ReactElement {
       )}
 
       {/* Elf Timeline */}
-      <ElfTimeline statuses={statuses} />
+      <ElfTimeline statuses={statuses} details={details} />
 
       {/* Fun facts while waiting */}
       {!error && !isComplete && (
