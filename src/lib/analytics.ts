@@ -47,7 +47,7 @@ type EventName = typeof AnalyticsEvents[keyof typeof AnalyticsEvents];
 /**
  * Track when user starts the gift journey
  */
-export function trackJourneyStarted(source: 'hero' | 'nav' | 'footer' | 'how-it-works'): void {
+export function trackJourneyStarted(source: 'hero' | 'nav' | 'footer' | 'how-it-works' | 'workshop_door'): void {
   track(AnalyticsEvents.JOURNEY_STARTED, { source });
 }
 

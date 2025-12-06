@@ -37,7 +37,7 @@ export default function MagicalHomePage(): ReactElement {
       <HeroSection onStartJourney={handleStartJourney} />
 
       {/* Workshop Introduction */}
-      <WorkshopIntro />
+      <WorkshopIntro onStartJourney={handleStartJourney} />
 
       {/* Meet the AI Elves */}
       <ElvesSection />

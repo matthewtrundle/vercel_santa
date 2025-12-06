@@ -4,6 +4,34 @@ import { generateText } from 'ai';
 import { models } from '@/lib/ai';
 import type { ImageElfInput, ImageElfOutput, AgeGroupCategory } from '@/types';
 
+// Helper to fetch image and convert to base64 data URL
+async function fetchImageAsDataUrl(imageUrl: string): Promise<string> {
+  // If already a data URL, return as-is
+  if (imageUrl.startsWith('data:')) {
+    return imageUrl;
+  }
+
+  try {
+    console.log('[Image Elf] Fetching image to convert to base64...');
+    const response = await fetch(imageUrl);
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+    }
+
+    const contentType = response.headers.get('content-type') || 'image/jpeg';
+    const arrayBuffer = await response.arrayBuffer();
+    const base64 = Buffer.from(arrayBuffer).toString('base64');
+    const dataUrl = `data:${contentType};base64,${base64}`;
+
+    console.log('[Image Elf] Image converted to base64, size:', base64.length);
+    return dataUrl;
+  } catch (error) {
+    console.error('[Image Elf] Failed to fetch image:', error);
+    throw error;
+  }
+}
+
 const IMAGE_ELF_SYSTEM_PROMPT = `You are the Vision Elf in Santa's Workshop. Your job is to analyze images to help find the perfect gift. The image could be:
 - A photo of someone (person of any age)
 - A drawing of something desired
@@ -59,6 +87,9 @@ export async function runImageElf(input: ImageElfInput): Promise<ImageElfOutput>
     const isBlobUrl = input.imageUrl.includes('blob.vercel-storage.com');
     console.log('[Image Elf] URL type:', isDataUrl ? 'data URL' : isBlobUrl ? 'Vercel Blob' : 'other');
 
+    // Convert external URLs to base64 data URLs for better compatibility with AI Gateway
+    const imageDataUrl = await fetchImageAsDataUrl(input.imageUrl);
+
     const { text } = await generateText({
       model: models.vision,
       messages: [
@@ -75,7 +106,7 @@ export async function runImageElf(input: ImageElfInput): Promise<ImageElfOutput>
             },
             {
               type: 'image',
-              image: input.imageUrl,
+              image: imageDataUrl,
             },
           ],
         },

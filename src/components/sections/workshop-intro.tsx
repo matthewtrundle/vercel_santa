@@ -3,14 +3,20 @@
 import type { ReactElement } from 'react';
 import { motion, useScroll, useTransform } from 'motion/react';
 import { useRef } from 'react';
+import { useCallback } from 'react';
 import { Camera, MessageSquare, Gift } from 'lucide-react';
 import { FadeInSection } from '@/components/magical/parallax-section';
 import { SingleLight } from '@/components/magical/twinkling-lights';
 import { WavyDivider } from '@/components/organic/snow-drift';
 import { RibbonBanner, GiftTagCard } from '@/components/organic/gift-tag-card';
 import { ScatteredDecorations } from '@/components/organic/scattered-decorations';
+import { trackJourneyStarted } from '@/lib/analytics';
 
-export function WorkshopIntro(): ReactElement {
+interface WorkshopIntroProps {
+  onStartJourney?: () => void;
+}
+
+export function WorkshopIntro({ onStartJourney }: WorkshopIntroProps): ReactElement {
   const sectionRef = useRef<HTMLDivElement>(null);
   const { scrollYProgress } = useScroll({
     target: sectionRef,
@@ -19,6 +25,13 @@ export function WorkshopIntro(): ReactElement {
 
   const buildingY = useTransform(scrollYProgress, [0, 1], [100, -50]);
   const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0.5]);
+
+  const handleDoorClick = useCallback(() => {
+    if (onStartJourney) {
+      trackJourneyStarted('workshop_door');
+      onStartJourney();
+    }
+  }, [onStartJourney]);
 
   const steps = [
     {
@@ -197,21 +210,49 @@ export function WorkshopIntro(): ReactElement {
                 </g>
               ))}
 
-              {/* Door - organic arch */}
-              <path
-                d="M275 360 L275 280 Q300 255 325 280 L325 360 Z"
-                fill="#5D3A1A"
-              />
-              <path
-                d="M280 355 L280 285 Q300 265 320 285 L320 355 Z"
-                fill="#8B4513"
-              />
-              <circle cx="312" cy="320" r="5" fill="#FFD700" />
-              {/* Door wreath - organic */}
-              <circle cx="300" cy="295" r="14" fill="none" stroke="#228B22" strokeWidth="7" />
-              <circle cx="300" cy="283" r="4" fill="#C41E3A" />
-              <circle cx="295" cy="287" r="3" fill="#C41E3A" />
-              <circle cx="305" cy="287" r="3" fill="#C41E3A" />
+              {/* Door - organic arch - CLICKABLE */}
+              <motion.g
+                onClick={handleDoorClick}
+                style={{ cursor: onStartJourney ? 'pointer' : 'default' }}
+                whileHover={onStartJourney ? { scale: 1.02 } : {}}
+                whileTap={onStartJourney ? { scale: 0.98 } : {}}
+                className="door-group"
+              >
+                {/* Door frame */}
+                <path
+                  d="M275 360 L275 280 Q300 255 325 280 L325 360 Z"
+                  fill="#5D3A1A"
+                />
+                {/* Door panel */}
+                <motion.path
+                  d="M280 355 L280 285 Q300 265 320 285 L320 355 Z"
+                  fill="#8B4513"
+                  whileHover={onStartJourney ? { fill: '#A0522D' } : {}}
+                />
+                {/* Door handle - golden glow on hover */}
+                <motion.circle
+                  cx="312"
+                  cy="320"
+                  r="5"
+                  fill="#FFD700"
+                  whileHover={onStartJourney ? { r: 6, fill: '#FFF8DC' } : {}}
+                  animate={onStartJourney ? { scale: [1, 1.1, 1] } : {}}
+                  transition={{ duration: 1.5, repeat: Infinity }}
+                />
+                {/* Door wreath - organic */}
+                <circle cx="300" cy="295" r="14" fill="none" stroke="#228B22" strokeWidth="7" />
+                <circle cx="300" cy="283" r="4" fill="#C41E3A" />
+                <circle cx="295" cy="287" r="3" fill="#C41E3A" />
+                <circle cx="305" cy="287" r="3" fill="#C41E3A" />
+                {/* Invisible hit area for easier clicking */}
+                <rect
+                  x="270"
+                  y="250"
+                  width="60"
+                  height="115"
+                  fill="transparent"
+                />
+              </motion.g>
 
               {/* Sign - at an angle */}
               <g transform="translate(220, 138) rotate(-2)">

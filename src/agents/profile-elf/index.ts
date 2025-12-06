@@ -68,8 +68,11 @@ function determineAgeGroup(age: number): AgeGroupCategory {
 export async function runProfileElf(input: ProfileElfInput): Promise<ProfileElfOutput> {
   const { formData, imageAnalysis } = input;
 
-  // If no image analysis, create profile from form data only
-  if (!imageAnalysis || imageAnalysis.confidence === 0) {
+  const hasImageAnalysis = imageAnalysis && imageAnalysis.confidence > 0;
+  const hasSpecialNotes = formData.specialNotes && formData.specialNotes.trim().length > 0;
+
+  // If no image analysis AND no special notes, create basic profile from form data only
+  if (!hasImageAnalysis && !hasSpecialNotes) {
     const ageGroup = determineAgeGroup(formData.age);
     const budgetTier = mapBudgetToTier(formData.budget);
 
@@ -89,6 +92,32 @@ export async function runProfileElf(input: ProfileElfInput): Promise<ProfileElfO
   }
 
   try {
+    // Build the prompt based on available data
+    let userContent = `Create a comprehensive gift recipient profile from the following data:
+
+USER-PROVIDED DATA (higher priority):
+- Name: ${formData.name}
+- Age: ${formData.age} years old
+- Interests selected: ${formData.interests.join(', ')}
+- Budget preference: ${formData.budget}
+${formData.specialNotes ? `- Special notes from parent: ${formData.specialNotes}` : ''}`;
+
+    // Add image analysis section if available
+    if (hasImageAnalysis && imageAnalysis) {
+      userContent += `
+
+IMAGE ANALYSIS (supporting data, confidence: ${imageAnalysis.confidence}):
+- Estimated age range: ${imageAnalysis.estimatedAgeRange}
+- Age group from image: ${imageAnalysis.ageGroupCategory}
+- Visible interests: ${imageAnalysis.visibleInterestsFromImage.join(', ') || 'none detected'}
+- Color preferences: ${imageAnalysis.colorPreferencesFromClothing.join(', ') || 'none detected'}
+- Environment clues: ${imageAnalysis.environmentClues.join(', ') || 'none detected'}`;
+    }
+
+    userContent += `
+
+Create the profile JSON. Pay special attention to any special notes from the parent as they often contain important hints about preferences or things to avoid.`;
+
     const { text } = await generateText({
       model: models.fast,
       messages: [
@@ -98,23 +127,7 @@ export async function runProfileElf(input: ProfileElfInput): Promise<ProfileElfO
         },
         {
           role: 'user',
-          content: `Merge the following data to create a comprehensive gift recipient profile:
-
-USER-PROVIDED DATA (higher priority):
-- Name: ${formData.name}
-- Age: ${formData.age} years old
-- Interests selected: ${formData.interests.join(', ')}
-- Budget preference: ${formData.budget}
-${formData.specialNotes ? `- Special notes: ${formData.specialNotes}` : ''}
-
-IMAGE ANALYSIS (supporting data, confidence: ${imageAnalysis.confidence}):
-- Estimated age range: ${imageAnalysis.estimatedAgeRange}
-- Age group from image: ${imageAnalysis.ageGroupCategory}
-- Visible interests: ${imageAnalysis.visibleInterestsFromImage.join(', ') || 'none detected'}
-- Color preferences: ${imageAnalysis.colorPreferencesFromClothing.join(', ') || 'none detected'}
-- Environment clues: ${imageAnalysis.environmentClues.join(', ') || 'none detected'}
-
-Create the merged profile JSON.`,
+          content: userContent,
         },
       ],
     });
@@ -155,7 +168,7 @@ Create the merged profile JSON.`,
         name: formData.name,
         ageGroup,
         primaryInterests: formData.interests.slice(0, 5),
-        secondaryInterests: imageAnalysis.visibleInterestsFromImage || [],
+        secondaryInterests: imageAnalysis?.visibleInterestsFromImage || [],
         personalityTraits: [],
         giftCategories: formData.interests.slice(0, 5),
         budgetTier,
