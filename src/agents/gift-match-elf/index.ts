@@ -1,7 +1,7 @@
 'use server';
 
 import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { models } from '@/lib/ai';
 import { db } from '@/db';
 import { giftInventory } from '@/db/schema';
 import { eq, inArray, and } from 'drizzle-orm';
@@ -122,7 +122,7 @@ export async function runGiftMatchElf(
       .join('\n');
 
     const { text } = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: models.fast,
       messages: [
         {
           role: 'system',

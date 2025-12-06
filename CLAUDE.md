@@ -9,7 +9,7 @@ Santa's AI Workshop is a holiday-themed multi-agent gift recommender that demons
 ## Tech Stack
 
 - **Framework**: Next.js 15 (App Router, Server Components, Server Actions)
-- **AI**: Vercel AI SDK 5.0 (streaming, agents)
+- **AI**: Vercel AI SDK 5.0 + Vercel AI Gateway (streaming, multi-provider)
 - **Database**: Vercel Postgres + Drizzle ORM
 - **Storage**: Vercel Blob (image uploads)
 - **Styling**: Tailwind CSS + shadcn/ui components
@@ -115,7 +115,7 @@ export function Component({ title, onAction }: ComponentProps): ReactElement {
 ## Environment Variables
 
 Required in `.env.local`:
-- `OPENAI_API_KEY` - OpenAI API key
+- `AI_GATEWAY_API_KEY` - Vercel AI Gateway API key (from Vercel dashboard)
 - `POSTGRES_URL` - Vercel Postgres connection string
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob token
 - `NEXT_PUBLIC_APP_URL` - Application URL

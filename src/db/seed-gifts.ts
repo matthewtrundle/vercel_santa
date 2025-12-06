@@ -197,7 +197,7 @@ function generateGiftVariations() {
     category: string;
     ageGroups: string[];
     priceRange: 'budget' | 'moderate' | 'premium';
-    price: number;
+    price: string;
     imageUrl: string;
     tags: string[];
   }> = [];
@@ -227,7 +227,7 @@ function generateGiftVariations() {
           category,
           ageGroups,
           priceRange: tier,
-          price: adjustedPrice,
+          price: adjustedPrice.toFixed(2),
           imageUrl: `https://placehold.co/400x400/e8f5e9/2e7d32?text=${encodeURIComponent(category)}`,
           tags: [...template.tags, tier],
         });
@@ -252,7 +252,7 @@ function generateGiftVariations() {
   // Add extra items in all budget tiers
   for (const item of extraItems) {
     for (const tier of budgetTiers) {
-      const adjustedPrice = Number((item.price * priceMultipliers[tier]).toFixed(2));
+      const adjustedPrice = (item.price * priceMultipliers[tier]).toFixed(2);
       gifts.push({
         name: tier === 'premium' ? `${item.name} Deluxe` : tier === 'budget' ? `${item.name} Basic` : item.name,
         description: item.description,

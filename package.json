@@ -20,6 +20,7 @@
   },
   "dependencies": {
     "@ai-sdk/openai": "^2.0.77",
+    "@ai-sdk/openai-compatible": "^1.0.28",
     "@vercel/blob": "^2.0.0",
     "@vercel/postgres": "^0.10.0",
     "ai": "^5.0.107",

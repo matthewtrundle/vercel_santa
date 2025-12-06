@@ -1,7 +1,7 @@
 'use server';
 
 import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { models } from '@/lib/ai';
 import type { ImageElfInput, ImageElfOutput, AgeGroupCategory } from '@/types';
 
 const IMAGE_ELF_SYSTEM_PROMPT = `You are the Image Elf in Santa's Workshop. Your job is to analyze photos of children to help Santa understand their interests and personality.
@@ -38,7 +38,7 @@ Age group mapping:
 export async function runImageElf(input: ImageElfInput): Promise<ImageElfOutput> {
   try {
     const { text } = await generateText({
-      model: openai('gpt-4o'),
+      model: models.vision,
       messages: [
         {
           role: 'system',

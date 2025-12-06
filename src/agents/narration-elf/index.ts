@@ -1,7 +1,7 @@
 'use server';
 
 import { streamText, generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { models } from '@/lib/ai';
 import type { NarrationElfInput, ScoredRecommendation } from '@/types';
 
 const NARRATION_ELF_SYSTEM_PROMPT = `You are the Narration Elf in Santa's Workshop. Your job is to write a magical, personalized letter from Santa to the child.
@@ -45,7 +45,7 @@ export async function runNarrationElf(
 
   try {
     const { text } = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: models.fast,
       messages: [
         {
           role: 'system',
@@ -96,7 +96,7 @@ export async function streamNarrationElf(
   const { profile, recommendations } = input;
 
   const result = streamText({
-    model: openai('gpt-4o-mini'),
+    model: models.fast,
     messages: [
       {
         role: 'system',

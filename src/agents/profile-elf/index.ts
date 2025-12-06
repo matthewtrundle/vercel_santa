@@ -1,7 +1,7 @@
 'use server';
 
 import { generateText } from 'ai';
-import { openai } from '@ai-sdk/openai';
+import { models } from '@/lib/ai';
 import type {
   ProfileElfInput,
   ProfileElfOutput,
@@ -90,7 +90,7 @@ export async function runProfileElf(input: ProfileElfInput): Promise<ProfileElfO
 
   try {
     const { text } = await generateText({
-      model: openai('gpt-4o-mini'),
+      model: models.fast,
       messages: [
         {
           role: 'system',
