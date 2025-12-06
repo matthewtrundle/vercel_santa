@@ -127,11 +127,11 @@ export async function runImageElf(input: ImageElfInput): Promise<ImageElfOutput>
       throw new Error('Invalid Image Elf output structure');
     }
 
-    // Normalize age group category (handle "adult" as new option)
+    // Normalize age group category
     let ageGroupCategory = parsed.ageGroupCategory as AgeGroupCategory;
-    const validCategories: AgeGroupCategory[] = ['toddler', 'preschool', 'early_school', 'tween', 'teen'];
+    const validCategories: AgeGroupCategory[] = ['toddler', 'preschool', 'early_school', 'tween', 'teen', 'adult'];
     if (!validCategories.includes(ageGroupCategory)) {
-      // Default to 'early_school' for unknown/adult categories since type doesn't include 'adult' yet
+      // Default to 'early_school' for unknown categories
       console.log('[Image Elf] Normalizing age category from:', ageGroupCategory);
       ageGroupCategory = 'early_school';
     }
