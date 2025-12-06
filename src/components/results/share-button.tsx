@@ -5,6 +5,7 @@ import type { ReactElement } from 'react';
 import { Share2, Copy, Check, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { shareSantaList } from '@/actions/santa-list';
+import { trackListShared, trackListCopied } from '@/lib/analytics';
 
 interface ShareButtonProps {
   sessionId: string;
@@ -32,9 +33,12 @@ export function ShareButton({ sessionId }: ShareButtonProps): ReactElement {
               text: "Check out this personalized gift list from Santa's Workshop!",
               url: result.shareUrl,
             });
+            trackListShared('social', 0);
           } catch {
             // User cancelled or share failed, just show the URL
           }
+        } else {
+          trackListShared('link', 0);
         }
       } else {
         setError(result.error || 'Failed to generate share link');
@@ -46,6 +50,7 @@ export function ShareButton({ sessionId }: ShareButtonProps): ReactElement {
     if (shareUrl) {
       await navigator.clipboard.writeText(shareUrl);
       setCopied(true);
+      trackListCopied(0);
       setTimeout(() => setCopied(false), 2000);
     }
   };

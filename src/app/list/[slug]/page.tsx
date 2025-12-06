@@ -6,6 +6,7 @@ import { Gift, ExternalLink, Check, Sparkles } from 'lucide-react';
 import { getPublicSantaList } from '@/actions/santa-list';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { PublicListTracker } from '@/components/list/public-list-tracker';
 
 interface ListPageProps {
   params: Promise<{ slug: string }>;
@@ -55,6 +56,7 @@ export default async function PublicListPage({
   );
 
   return (
+    <PublicListTracker itemCount={items.length}>
     <div className="max-w-4xl mx-auto py-8">
       {/* Header */}
       <div className="text-center mb-10">
@@ -203,5 +205,6 @@ export default async function PublicListPage({
         </p>
       </div>
     </div>
+    </PublicListTracker>
   );
 }

@@ -139,3 +139,13 @@ export const GIFT_CATEGORIES = [
 ] as const;
 
 export type GiftCategory = (typeof GIFT_CATEGORIES)[number];
+
+// Age groups for inventory
+export const AGE_GROUPS = [
+  'toddler',
+  'preschool',
+  'early_school',
+  'tween',
+  'teen',
+  'adult',
+] as const;

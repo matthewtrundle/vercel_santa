@@ -97,112 +97,310 @@ export function ReindeerCard({
       {/* Reindeer SVG */}
       <div className="flex justify-center mb-4">
         <svg
-          width="100"
-          height="80"
-          viewBox="0 0 100 80"
+          width="120"
+          height="100"
+          viewBox="0 0 120 100"
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Body */}
+          {/* Definitions for gradients and filters */}
+          <defs>
+            {/* Fur gradient - warm brown tones */}
+            <linearGradient id={`furGrad-${index}`} x1="0%" y1="0%" x2="100%" y2="100%">
+              <stop offset="0%" stopColor="#A67C52" />
+              <stop offset="50%" stopColor="#8B6914" />
+              <stop offset="100%" stopColor="#6B4423" />
+            </linearGradient>
+
+            {/* Lighter fur for belly/face */}
+            <linearGradient id={`lightFurGrad-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#C4A574" />
+              <stop offset="100%" stopColor="#A67C52" />
+            </linearGradient>
+
+            {/* Antler gradient */}
+            <linearGradient id={`antlerGrad-${index}`} x1="0%" y1="0%" x2="0%" y2="100%">
+              <stop offset="0%" stopColor="#8B7355" />
+              <stop offset="50%" stopColor="#6B5344" />
+              <stop offset="100%" stopColor="#4A3728" />
+            </linearGradient>
+
+            {/* Rudolph's nose glow */}
+            <radialGradient id="noseGlow" cx="50%" cy="50%" r="50%">
+              <stop offset="0%" stopColor="#FF0000" />
+              <stop offset="60%" stopColor="#CC0000" />
+              <stop offset="100%" stopColor="#990000" />
+            </radialGradient>
+
+            {/* Soft shadow filter */}
+            <filter id={`shadow-${index}`} x="-20%" y="-20%" width="140%" height="140%">
+              <feDropShadow dx="2" dy="3" stdDeviation="2" floodOpacity="0.2" />
+            </filter>
+
+            {/* Glow filter for Rudolph */}
+            <filter id="redGlow" x="-100%" y="-100%" width="300%" height="300%">
+              <feGaussianBlur stdDeviation="4" result="blur" />
+              <feMerge>
+                <feMergeNode in="blur" />
+                <feMergeNode in="SourceGraphic" />
+              </feMerge>
+            </filter>
+          </defs>
+
+          {/* Main reindeer group with gentle bobbing */}
           <motion.g
-            animate={{ y: [-1, 1, -1] }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'easeInOut' }}
+            animate={{ y: [-2, 2, -2] }}
+            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            filter={`url(#shadow-${index})`}
           >
-            <ellipse cx="50" cy="50" rx="30" ry="20" fill="#8B4513" />
+            {/* Back legs */}
+            <motion.g
+              animate={{ rotate: [-4, 4, -4] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut', delay: 0.1 }}
+              style={{ transformOrigin: '35px 65px' }}
+            >
+              <path
+                d="M32 65 L30 82 Q30 86 28 86 L32 86 Q34 86 34 82 L36 65"
+                fill={`url(#furGrad-${index})`}
+                stroke="#5D3A1A"
+                strokeWidth="0.5"
+              />
+              {/* Hoof */}
+              <ellipse cx="30" cy="87" rx="4" ry="2" fill="#2a2a2a" />
+            </motion.g>
+
+            <motion.g
+              animate={{ rotate: [4, -4, 4] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut', delay: 0.1 }}
+              style={{ transformOrigin: '48px 65px' }}
+            >
+              <path
+                d="M45 65 L43 82 Q43 86 41 86 L45 86 Q47 86 47 82 L49 65"
+                fill={`url(#furGrad-${index})`}
+                stroke="#5D3A1A"
+                strokeWidth="0.5"
+              />
+              <ellipse cx="43" cy="87" rx="4" ry="2" fill="#2a2a2a" />
+            </motion.g>
+
+            {/* Front legs */}
+            <motion.g
+              animate={{ rotate: [-4, 4, -4] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ transformOrigin: '58px 62px' }}
+            >
+              <path
+                d="M55 62 L53 80 Q53 84 51 84 L55 84 Q57 84 57 80 L59 62"
+                fill={`url(#furGrad-${index})`}
+                stroke="#5D3A1A"
+                strokeWidth="0.5"
+              />
+              <ellipse cx="53" cy="85" rx="4" ry="2" fill="#2a2a2a" />
+            </motion.g>
+
+            <motion.g
+              animate={{ rotate: [4, -4, 4] }}
+              transition={{ duration: 1.2, repeat: Infinity, ease: 'easeInOut' }}
+              style={{ transformOrigin: '70px 62px' }}
+            >
+              <path
+                d="M67 62 L65 80 Q65 84 63 84 L67 84 Q69 84 69 80 L71 62"
+                fill={`url(#furGrad-${index})`}
+                stroke="#5D3A1A"
+                strokeWidth="0.5"
+              />
+              <ellipse cx="65" cy="85" rx="4" ry="2" fill="#2a2a2a" />
+            </motion.g>
+
+            {/* Body - organic oval shape */}
+            <ellipse
+              cx="52"
+              cy="55"
+              rx="32"
+              ry="18"
+              fill={`url(#furGrad-${index})`}
+              stroke="#5D3A1A"
+              strokeWidth="0.5"
+            />
+
+            {/* Belly highlight */}
+            <ellipse
+              cx="50"
+              cy="60"
+              rx="20"
+              ry="10"
+              fill={`url(#lightFurGrad-${index})`}
+              opacity="0.6"
+            />
+
+            {/* Tail */}
+            <motion.path
+              d="M20 50 Q15 48 18 45 Q22 42 20 50"
+              fill={`url(#lightFurGrad-${index})`}
+              animate={{ rotate: [-15, 15, -15] }}
+              transition={{ duration: 0.6, repeat: Infinity }}
+              style={{ transformOrigin: '20px 48px' }}
+            />
+
+            {/* Neck */}
+            <path
+              d="M75 50 Q82 42 85 35"
+              stroke={`url(#furGrad-${index})`}
+              strokeWidth="12"
+              strokeLinecap="round"
+              fill="none"
+            />
 
             {/* Head */}
-            <circle cx="75" cy="35" r="15" fill="#A0522D" />
+            <ellipse
+              cx="90"
+              cy="30"
+              rx="16"
+              ry="14"
+              fill={`url(#furGrad-${index})`}
+              stroke="#5D3A1A"
+              strokeWidth="0.5"
+            />
+
+            {/* Muzzle/snout */}
+            <ellipse
+              cx="103"
+              cy="35"
+              rx="8"
+              ry="6"
+              fill={`url(#lightFurGrad-${index})`}
+              stroke="#5D3A1A"
+              strokeWidth="0.5"
+            />
 
             {/* Ears */}
-            <ellipse cx="65" cy="22" rx="4" ry="7" fill="#A0522D" />
-            <ellipse cx="85" cy="22" rx="4" ry="7" fill="#A0522D" />
+            <motion.ellipse
+              cx="80"
+              cy="18"
+              rx="4"
+              ry="8"
+              fill={`url(#furGrad-${index})`}
+              stroke="#5D3A1A"
+              strokeWidth="0.5"
+              animate={{ rotate: [-5, 5, -5] }}
+              transition={{ duration: 2, repeat: Infinity }}
+              style={{ transformOrigin: '80px 22px' }}
+            />
+            <ellipse cx="80" cy="18" rx="2" ry="5" fill="#D4A574" opacity="0.6" />
+
+            <motion.ellipse
+              cx="100"
+              cy="18"
+              rx="4"
+              ry="8"
+              fill={`url(#furGrad-${index})`}
+              stroke="#5D3A1A"
+              strokeWidth="0.5"
+              animate={{ rotate: [5, -5, 5] }}
+              transition={{ duration: 2, repeat: Infinity, delay: 0.3 }}
+              style={{ transformOrigin: '100px 22px' }}
+            />
+            <ellipse cx="100" cy="18" rx="2" ry="5" fill="#D4A574" opacity="0.6" />
 
             {/* Antlers */}
-            <g stroke="#5D3A1A" strokeWidth="3" fill="none" strokeLinecap="round">
-              <path d="M68 18 L65 5 L60 10" />
-              <path d="M65 5 L62 0" />
-              <path d="M82 18 L85 5 L90 10" />
-              <path d="M85 5 L88 0" />
+            <g stroke={`url(#antlerGrad-${index})`} strokeWidth="3" fill="none" strokeLinecap="round" strokeLinejoin="round">
+              {/* Left antler */}
+              <path d="M82 15 Q78 8 75 2" />
+              <path d="M78 10 Q73 8 70 10" />
+              <path d="M76 5 Q72 2 68 5" />
+
+              {/* Right antler */}
+              <path d="M98 15 Q102 8 105 2" />
+              <path d="M102 10 Q107 8 110 10" />
+              <path d="M104 5 Q108 2 112 5" />
             </g>
 
             {/* Eye */}
-            <motion.circle
-              cx="78"
-              cy="32"
-              r="3"
-              fill="#2a2a2a"
+            <motion.g
               animate={{ scaleY: [1, 0.1, 1] }}
-              transition={{ duration: 4, repeat: Infinity, repeatDelay: 2 }}
+              transition={{ duration: 4, repeat: Infinity, repeatDelay: 3 }}
+            >
+              <ellipse cx="93" cy="28" rx="4" ry="5" fill="#2a2a2a" />
+              <ellipse cx="94" cy="26" rx="1.5" ry="2" fill="white" />
+            </motion.g>
+
+            {/* Eyebrow for expression */}
+            <path
+              d="M89 22 Q93 20 97 22"
+              stroke="#5D3A1A"
+              strokeWidth="1"
+              fill="none"
             />
-            <circle cx="79" cy="31" r="1" fill="white" />
 
             {/* Nose */}
             {isRudolph ? (
-              <motion.g>
+              <motion.g filter="url(#redGlow)">
                 <motion.circle
-                  cx="88"
-                  cy="38"
+                  cx="110"
+                  cy="36"
                   r="6"
-                  fill="#FF0000"
-                  animate={{ opacity: [0.7, 1, 0.7] }}
-                  transition={{ duration: 0.8, repeat: Infinity }}
+                  fill="url(#noseGlow)"
+                  animate={{
+                    scale: [1, 1.1, 1],
+                    opacity: [0.8, 1, 0.8]
+                  }}
+                  transition={{ duration: 1, repeat: Infinity }}
                 />
-                <motion.circle
-                  cx="88"
-                  cy="38"
-                  r="12"
-                  fill="#FF0000"
-                  opacity="0.3"
-                  animate={{ r: [12, 16, 12], opacity: [0.3, 0.5, 0.3] }}
-                  transition={{ duration: 0.8, repeat: Infinity }}
-                />
+                {/* Nose shine */}
+                <circle cx="108" cy="34" r="2" fill="white" opacity="0.5" />
               </motion.g>
             ) : (
-              <circle cx="88" cy="38" r="4" fill="#2a2a2a" />
+              <g>
+                <ellipse cx="110" cy="36" rx="4" ry="3" fill="#2a2a2a" />
+                <ellipse cx="108" cy="35" rx="1" ry="0.8" fill="#444" />
+              </g>
             )}
 
-            {/* Legs */}
-            <motion.g
-              animate={{ rotate: [-3, 3, -3] }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-              style={{ transformOrigin: '35px 60px' }}
-            >
-              <rect x="30" y="60" width="5" height="18" fill="#5D3A1A" rx="2" />
-            </motion.g>
-            <motion.g
-              animate={{ rotate: [3, -3, 3] }}
-              transition={{ duration: 0.8, repeat: Infinity }}
-              style={{ transformOrigin: '45px 60px' }}
-            >
-              <rect x="42" y="60" width="5" height="18" fill="#5D3A1A" rx="2" />
-            </motion.g>
-            <motion.g
-              animate={{ rotate: [-3, 3, -3] }}
-              transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
-              style={{ transformOrigin: '55px 60px' }}
-            >
-              <rect x="52" y="60" width="5" height="18" fill="#5D3A1A" rx="2" />
-            </motion.g>
-            <motion.g
-              animate={{ rotate: [3, -3, 3] }}
-              transition={{ duration: 0.8, repeat: Infinity, delay: 0.2 }}
-              style={{ transformOrigin: '65px 60px' }}
-            >
-              <rect x="62" y="60" width="5" height="18" fill="#5D3A1A" rx="2" />
-            </motion.g>
+            {/* Mouth - subtle smile */}
+            <path
+              d="M105 40 Q108 42 111 40"
+              stroke="#5D3A1A"
+              strokeWidth="1"
+              fill="none"
+            />
 
-            {/* Tail */}
-            <motion.ellipse
-              cx="20"
-              cy="45"
-              rx="5"
-              ry="3"
-              fill="#A0522D"
-              animate={{ rotate: [-10, 10, -10] }}
-              transition={{ duration: 0.5, repeat: Infinity }}
-              style={{ transformOrigin: '22px 45px' }}
+            {/* Chest fluff */}
+            <path
+              d="M72 45 Q75 52 72 58"
+              stroke={`url(#lightFurGrad-${index})`}
+              strokeWidth="6"
+              fill="none"
+              strokeLinecap="round"
             />
           </motion.g>
+
+          {/* Sparkles for Rudolph */}
+          {isRudolph && (
+            <>
+              {[0, 1, 2].map((i) => (
+                <motion.g
+                  key={i}
+                  initial={{ opacity: 0, scale: 0 }}
+                  animate={{
+                    opacity: [0, 1, 0],
+                    scale: [0, 1, 0],
+                    x: [0, (i - 1) * 8],
+                    y: [0, -10 - i * 5]
+                  }}
+                  transition={{
+                    duration: 1.5,
+                    repeat: Infinity,
+                    delay: i * 0.3,
+                  }}
+                >
+                  <path
+                    d={`M${115 + i * 3} ${30 - i * 2} l2 0 l-2 2 l-2 -2 z`}
+                    fill="#FFD700"
+                  />
+                </motion.g>
+              ))}
+            </>
+          )}
         </svg>
       </div>
 
@@ -221,7 +419,7 @@ export function ReindeerCard({
         <p className="text-sm text-gray-600 mb-3">{reindeer.fact}</p>
         <div className="inline-flex items-center gap-1 px-3 py-1 bg-amber-50 rounded-full">
           <span className="text-amber-600 text-xs font-medium">
-            ⚡ {reindeer.specialPower}
+            {reindeer.specialPower}
           </span>
         </div>
       </div>
@@ -249,6 +447,7 @@ export function ReindeerMini({
             className="w-4 h-4 rounded-full bg-red-500"
             animate={{ opacity: [0.6, 1, 0.6] }}
             transition={{ duration: 0.8, repeat: Infinity }}
+            style={{ boxShadow: '0 0 10px #FF0000' }}
           />
         ) : (
           <span className="text-2xl">🦌</span>

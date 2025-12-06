@@ -6,6 +6,7 @@ import { ExternalLink, ScrollText, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { addToSantaList, removeFromSantaList } from '@/actions/santa-list';
+import { trackGiftSaved, trackGiftRemoved, trackGiftViewed } from '@/lib/analytics';
 
 interface Gift {
   id: string;
@@ -44,14 +45,20 @@ export function GiftCard({
         const result = await removeFromSantaList(sessionId, gift.id);
         if (result.success) {
           setIsInList(false);
+          trackGiftRemoved(gift.id);
         }
       } else {
         const result = await addToSantaList(sessionId, gift.id, recommendationId);
         if (result.success) {
           setIsInList(true);
+          trackGiftSaved(gift.id, gift.name);
         }
       }
     });
+  };
+
+  const handleViewProduct = () => {
+    trackGiftViewed(gift.id, 0);
   };
 
   return (
@@ -99,6 +106,7 @@ export function GiftCard({
                   href={gift.affiliateUrl}
                   target="_blank"
                   rel="noopener noreferrer"
+                  onClick={handleViewProduct}
                 >
                   <ExternalLink className="w-3 h-3 mr-1" />
                   View

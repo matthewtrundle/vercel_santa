@@ -15,3 +15,15 @@ export {
 } from './profile';
 
 export { uploadPhoto, uploadPhotoAndContinue } from './upload';
+
+export {
+  getGifts,
+  getGiftById,
+  createGift,
+  updateGift,
+  deleteGift,
+  toggleGiftActive,
+  getGiftCategories,
+  getInventoryStats,
+  type GiftFormData,
+} from './inventory';

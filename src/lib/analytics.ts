@@ -170,6 +170,27 @@ export function trackHowItWorksViewed(scrollDepth?: number): void {
 }
 
 /**
+ * Track results page view
+ */
+export function trackResultsViewed(giftCount: number): void {
+  track('results_viewed', { gift_count: giftCount });
+}
+
+/**
+ * Track public list view (shared list viewed by someone else)
+ */
+export function trackPublicListViewed(itemCount: number): void {
+  track('public_list_viewed', { item_count: itemCount });
+}
+
+/**
+ * Track wish list drawer opened
+ */
+export function trackWishListOpened(itemCount: number): void {
+  track('wish_list_opened', { item_count: itemCount });
+}
+
+/**
  * Generic track function for custom events
  */
 export function trackCustomEvent(name: EventName, properties?: Record<string, string | number | boolean>): void {

@@ -1,5 +1,4 @@
 import type { ReactElement } from 'react';
-import Link from 'next/link';
 import {
   Camera,
   ScrollText,
@@ -11,8 +10,8 @@ import {
   ShieldCheck,
   Sparkle,
 } from 'lucide-react';
-import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
+import { HowItWorksCta } from '@/components/how-it-works/how-it-works-cta';
 
 export const metadata = {
   title: 'How It Works | Santa\'s Workshop',
@@ -264,15 +263,7 @@ export default function HowItWorksPage(): ReactElement {
             It only takes 2 minutes to get personalized gift recommendations
             for your loved ones.
           </p>
-          <Link href="/workshop/start">
-            <Button
-              size="xl"
-              className="bg-white text-red-600 hover:bg-gray-100"
-            >
-              <Gift className="mr-2 h-5 w-5" />
-              Start Your Gift Journey
-            </Button>
-          </Link>
+          <HowItWorksCta />
         </div>
       </section>
     </main>

@@ -50,12 +50,18 @@ async function updateAgentRun(
     .where(eq(agentRuns.id, runId));
 }
 
+// Helper to add a small delay for visual feedback
+const delay = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
+
 export async function runAgentPipeline(
   sessionId: string,
-  onEvent?: (event: AgentEvent) => void
+  onEvent?: (event: AgentEvent) => Promise<void> | void
 ): Promise<OrchestratorResult> {
-  const emit = (event: Omit<AgentEvent, 'timestamp'>) => {
-    onEvent?.({ ...event, timestamp: Date.now() });
+  // Emit events with a small delay to ensure streaming is visible
+  const emit = async (event: Omit<AgentEvent, 'timestamp'>) => {
+    await onEvent?.({ ...event, timestamp: Date.now() });
+    // Small delay to ensure the event is flushed and visible on the client
+    await delay(100);
   };
 
   try {
@@ -100,21 +106,21 @@ export async function runAgentPipeline(
     let imageOutput: ImageElfOutput | null = null;
 
     const imageRun = await createAgentRun(sessionId, 'image');
-    emit({ type: 'status', agentId: 'image', status: 'running' });
-    emit({ type: 'detail', agentId: 'image', detail: 'Loading uploaded photo...' });
+    await emit({ type: 'status', agentId: 'image', status: 'running' });
+    await emit({ type: 'detail', agentId: 'image', detail: 'Loading uploaded photo...' });
     await updateAgentRun(imageRun.id, { status: 'running', startedAt: new Date() });
 
     const imageStartTime = Date.now();
 
     if (session.photoUrl) {
       try {
-        emit({ type: 'detail', agentId: 'image', detail: 'Running GPT-4 Vision analysis on photo...' });
+        await emit({ type: 'detail', agentId: 'image', detail: 'Running GPT-4 Vision analysis on photo...' });
         imageOutput = await runImageElf({
           imageUrl: session.photoUrl,
           sessionId,
         });
 
-        emit({ type: 'detail', agentId: 'image', detail: `Found ${imageOutput.visibleInterestsFromImage.length} interests in photo!` });
+        await emit({ type: 'detail', agentId: 'image', detail: `Found ${imageOutput.visibleInterestsFromImage.length} interests in photo!` });
 
         await updateAgentRun(imageRun.id, {
           status: 'completed',
@@ -123,47 +129,47 @@ export async function runAgentPipeline(
           durationMs: Date.now() - imageStartTime,
         });
 
-        emit({ type: 'output', agentId: 'image', data: imageOutput });
-        emit({ type: 'status', agentId: 'image', status: 'completed' });
+        await emit({ type: 'output', agentId: 'image', data: imageOutput });
+        await emit({ type: 'status', agentId: 'image', status: 'completed' });
       } catch (error) {
         console.error('Image Elf failed:', error);
-        emit({ type: 'detail', agentId: 'image', detail: 'Photo analysis skipped, using form data only' });
+        await emit({ type: 'detail', agentId: 'image', detail: 'Photo analysis skipped, using form data only' });
         await updateAgentRun(imageRun.id, {
           status: 'completed',
           error: 'Image analysis skipped',
           completedAt: new Date(),
           durationMs: Date.now() - imageStartTime,
         });
-        emit({ type: 'status', agentId: 'image', status: 'completed' });
+        await emit({ type: 'status', agentId: 'image', status: 'completed' });
       }
     } else {
       // No photo - skip image analysis
-      emit({ type: 'detail', agentId: 'image', detail: 'No photo uploaded, skipping visual analysis' });
+      await emit({ type: 'detail', agentId: 'image', detail: 'No photo uploaded, skipping visual analysis' });
       await updateAgentRun(imageRun.id, {
         status: 'completed',
         output: { skipped: true },
         completedAt: new Date(),
         durationMs: Date.now() - imageStartTime,
       });
-      emit({ type: 'status', agentId: 'image', status: 'completed' });
+      await emit({ type: 'status', agentId: 'image', status: 'completed' });
     }
 
     // ===== STEP 2: Profile Elf =====
     const profileRun = await createAgentRun(sessionId, 'profile');
-    emit({ type: 'status', agentId: 'profile', status: 'running' });
-    emit({ type: 'detail', agentId: 'profile', detail: 'Merging form data with image insights...' });
+    await emit({ type: 'status', agentId: 'profile', status: 'running' });
+    await emit({ type: 'detail', agentId: 'profile', detail: 'Merging form data with image insights...' });
     await updateAgentRun(profileRun.id, { status: 'running', startedAt: new Date() });
 
     const profileStartTime = Date.now();
 
-    emit({ type: 'detail', agentId: 'profile', detail: 'AI analyzing personality traits and interests...' });
+    await emit({ type: 'detail', agentId: 'profile', detail: 'AI analyzing personality traits and interests...' });
     const profileOutput = await runProfileElf({
       formData,
       imageAnalysis: imageOutput,
       sessionId,
     });
 
-    emit({ type: 'detail', agentId: 'profile', detail: `Identified ${profileOutput.profile.primaryInterests.length} primary interests` });
+    await emit({ type: 'detail', agentId: 'profile', detail: `Identified ${profileOutput.profile.primaryInterests.length} primary interests` });
 
     await updateAgentRun(profileRun.id, {
       status: 'completed',
@@ -194,24 +200,24 @@ export async function runAgentPipeline(
       })
       .where(eq(kidProfiles.sessionId, sessionId));
 
-    emit({ type: 'output', agentId: 'profile', data: profileOutput });
-    emit({ type: 'status', agentId: 'profile', status: 'completed' });
+    await emit({ type: 'output', agentId: 'profile', data: profileOutput });
+    await emit({ type: 'status', agentId: 'profile', status: 'completed' });
 
     // ===== STEP 3: Gift Match Elf =====
     const giftMatchRun = await createAgentRun(sessionId, 'gift-match');
-    emit({ type: 'status', agentId: 'gift-match', status: 'running' });
-    emit({ type: 'detail', agentId: 'gift-match', detail: 'Searching gift inventory database...' });
+    await emit({ type: 'status', agentId: 'gift-match', status: 'running' });
+    await emit({ type: 'detail', agentId: 'gift-match', detail: 'Searching gift inventory database...' });
     await updateAgentRun(giftMatchRun.id, { status: 'running', startedAt: new Date() });
 
     const giftMatchStartTime = Date.now();
 
-    emit({ type: 'detail', agentId: 'gift-match', detail: 'AI scoring and ranking potential matches...' });
+    await emit({ type: 'detail', agentId: 'gift-match', detail: 'AI scoring and ranking potential matches...' });
     const giftMatchOutput = await runGiftMatchElf({
       profile: profileOutput.profile,
       sessionId,
     });
 
-    emit({ type: 'detail', agentId: 'gift-match', detail: `Found ${giftMatchOutput.recommendations.length} perfect gift matches!` });
+    await emit({ type: 'detail', agentId: 'gift-match', detail: `Found ${giftMatchOutput.recommendations.length} perfect gift matches!` });
 
     await updateAgentRun(giftMatchRun.id, {
       status: 'completed',
@@ -221,7 +227,7 @@ export async function runAgentPipeline(
     });
 
     // Save recommendations to database
-    emit({ type: 'detail', agentId: 'gift-match', detail: 'Saving recommendations to your session...' });
+    await emit({ type: 'detail', agentId: 'gift-match', detail: 'Saving recommendations to your session...' });
     for (let i = 0; i < giftMatchOutput.recommendations.length; i++) {
       const rec = giftMatchOutput.recommendations[i];
       await db.insert(recommendations).values({
@@ -234,25 +240,25 @@ export async function runAgentPipeline(
       });
     }
 
-    emit({ type: 'output', agentId: 'gift-match', data: giftMatchOutput });
-    emit({ type: 'status', agentId: 'gift-match', status: 'completed' });
+    await emit({ type: 'output', agentId: 'gift-match', data: giftMatchOutput });
+    await emit({ type: 'status', agentId: 'gift-match', status: 'completed' });
 
     // ===== STEP 4: Narration Elf =====
     const narrationRun = await createAgentRun(sessionId, 'narration');
-    emit({ type: 'status', agentId: 'narration', status: 'running' });
-    emit({ type: 'detail', agentId: 'narration', detail: 'Gathering gift recommendations...' });
+    await emit({ type: 'status', agentId: 'narration', status: 'running' });
+    await emit({ type: 'detail', agentId: 'narration', detail: 'Gathering gift recommendations...' });
     await updateAgentRun(narrationRun.id, { status: 'running', startedAt: new Date() });
 
     const narrationStartTime = Date.now();
 
-    emit({ type: 'detail', agentId: 'narration', detail: 'Santa is writing a personalized letter...' });
+    await emit({ type: 'detail', agentId: 'narration', detail: 'Santa is writing a personalized letter...' });
     const santaNote = await runNarrationElf({
       profile: profileOutput.profile,
       recommendations: giftMatchOutput.recommendations,
       sessionId,
     });
 
-    emit({ type: 'detail', agentId: 'narration', detail: `Letter complete! ${santaNote.length} characters of holiday magic` });
+    await emit({ type: 'detail', agentId: 'narration', detail: `Letter complete! ${santaNote.length} characters of holiday magic` });
 
     await updateAgentRun(narrationRun.id, {
       status: 'completed',
@@ -262,7 +268,7 @@ export async function runAgentPipeline(
     });
 
     // Create Santa list with the note
-    emit({ type: 'detail', agentId: 'narration', detail: 'Creating your Santa List...' });
+    await emit({ type: 'detail', agentId: 'narration', detail: 'Creating your Santa List...' });
     await db.insert(santaLists).values({
       sessionId,
       name: `${profileOutput.profile.name}'s Gift List`,
@@ -270,8 +276,8 @@ export async function runAgentPipeline(
       isPublic: false,
     });
 
-    emit({ type: 'output', agentId: 'narration', data: { notePreview: santaNote.slice(0, 100) } });
-    emit({ type: 'status', agentId: 'narration', status: 'completed' });
+    await emit({ type: 'output', agentId: 'narration', data: { notePreview: santaNote.slice(0, 100) } });
+    await emit({ type: 'status', agentId: 'narration', status: 'completed' });
 
     // ===== Complete =====
     await db
@@ -283,7 +289,7 @@ export async function runAgentPipeline(
       })
       .where(eq(sessions.id, sessionId));
 
-    emit({ type: 'complete', agentId: 'narration' });
+    await emit({ type: 'complete', agentId: 'narration' });
 
     return {
       success: true,
@@ -299,7 +305,7 @@ export async function runAgentPipeline(
       .set({ status: 'failed', updatedAt: new Date() })
       .where(eq(sessions.id, sessionId));
 
-    emit({
+    await emit({
       type: 'error',
       agentId: 'image',
       error: error instanceof Error ? error.message : 'Unknown error',

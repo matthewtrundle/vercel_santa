@@ -1,28 +1,37 @@
 'use client';
 
 import type { ReactElement, ReactNode } from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { ShoppingBag } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { WishListDrawer } from './wish-list-drawer';
+import { trackResultsViewed, trackWishListOpened } from '@/lib/analytics';
 
 interface ResultsPageClientProps {
   sessionId: string;
   initialListCount: number;
+  giftCount: number;
   children: ReactNode;
 }
 
 export function ResultsPageClient({
   sessionId,
   initialListCount,
+  giftCount,
   children,
 }: ResultsPageClientProps): ReactElement {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const [listCount, setListCount] = useState(initialListCount);
 
+  // Track results page view on mount
+  useEffect(() => {
+    trackResultsViewed(giftCount);
+  }, [giftCount]);
+
   const handleOpenDrawer = useCallback(() => {
     setIsDrawerOpen(true);
-  }, []);
+    trackWishListOpened(listCount);
+  }, [listCount]);
 
   const handleCloseDrawer = useCallback(() => {
     setIsDrawerOpen(false);
