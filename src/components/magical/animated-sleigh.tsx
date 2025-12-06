@@ -37,6 +37,7 @@ export function AnimatedSleigh({
         viewBox="0 0 480 250"
         fill="none"
         xmlns="http://www.w3.org/2000/svg"
+        style={{ transform: 'scaleX(-1)' }}
       >
         {/* Definitions for gradients and filters */}
         <defs>
