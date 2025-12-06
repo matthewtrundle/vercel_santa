@@ -2,12 +2,14 @@ import type { ReactElement } from 'react';
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { notFound } from 'next/navigation';
-import { Gift, Share2, ListPlus, RefreshCw, ExternalLink } from 'lucide-react';
+import { Gift, RefreshCw } from 'lucide-react';
 import { db } from '@/db';
-import { sessions, kidProfiles, recommendations, giftInventory, santaLists } from '@/db/schema';
+import { sessions, kidProfiles, recommendations, giftInventory, santaLists, santaListItems } from '@/db/schema';
 import { eq, asc } from 'drizzle-orm';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { GiftCard } from '@/components/results/gift-card';
+import { ShareButton } from '@/components/results/share-button';
 
 interface ResultsPageProps {
   params: Promise<{ sessionId: string }>;
@@ -56,11 +58,22 @@ async function getSessionResults(sessionId: string) {
     .where(eq(santaLists.sessionId, sessionId))
     .limit(1);
 
+  // Get items already in list
+  let listItemGiftIds: string[] = [];
+  if (santaList) {
+    const items = await db
+      .select({ giftId: santaListItems.giftId })
+      .from(santaListItems)
+      .where(eq(santaListItems.listId, santaList.id));
+    listItemGiftIds = items.map((item) => item.giftId);
+  }
+
   return {
     session,
     profile,
     recommendations: recs,
     santaNote: santaList?.santaNote || null,
+    listItemGiftIds,
   };
 }
 
@@ -74,7 +87,7 @@ export default async function ResultsPage({
     notFound();
   }
 
-  const { profile, recommendations: recs, santaNote } = data;
+  const { profile, recommendations: recs, santaNote, listItemGiftIds } = data;
   const childName = profile?.name ?? 'your child';
   const hasRealData = recs.length > 0;
 
@@ -97,7 +110,7 @@ export default async function ResultsPage({
       <Card className="mb-8 bg-gradient-to-br from-red-50 to-green-50 border-2 border-red-200">
         <CardHeader>
           <CardTitle className="flex items-center gap-2 text-red-700">
-            <span className="text-2xl" aria-hidden="true">🎅</span>
+            <span className="text-2xl" aria-hidden="true">&#127877;</span>
             A Note from Santa
           </CardTitle>
         </CardHeader>
@@ -120,69 +133,38 @@ export default async function ResultsPage({
 
       {/* Gift Recommendations */}
       <div className="mb-8">
-        <h2 className="text-xl font-bold text-gray-900 mb-4">
-          Top Recommendations
-        </h2>
+        <div className="flex items-center justify-between mb-4">
+          <h2 className="text-xl font-bold text-gray-900">
+            Top Recommendations
+          </h2>
+          {listItemGiftIds.length > 0 && (
+            <span className="text-sm text-green-600 font-medium">
+              {listItemGiftIds.length} gift{listItemGiftIds.length !== 1 ? 's' : ''} in your list
+            </span>
+          )}
+        </div>
         <div className="grid md:grid-cols-2 gap-4">
           {hasRealData ? (
             recs.map((rec) => (
-              <Card key={rec.id} className="card-hover">
-                <CardContent className="pt-6">
-                  <div className="flex items-start justify-between mb-3">
-                    <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded-full font-medium">
-                      {rec.score}% Match
-                    </span>
-                    <span className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded-full capitalize">
-                      {rec.gift.category}
-                    </span>
-                  </div>
-                  <h3 className="font-semibold text-lg mb-1">{rec.gift.name}</h3>
-                  <p className="text-gray-600 text-sm mb-2">{rec.gift.description}</p>
-                  {rec.reasoning && (
-                    <p className="text-green-700 text-xs italic mb-3">
-                      &ldquo;{rec.reasoning}&rdquo;
-                    </p>
-                  )}
-                  {rec.matchedInterests && (rec.matchedInterests as string[]).length > 0 && (
-                    <div className="flex flex-wrap gap-1 mb-3">
-                      {(rec.matchedInterests as string[]).slice(0, 3).map((interest) => (
-                        <span
-                          key={interest}
-                          className="text-xs bg-blue-50 text-blue-600 px-2 py-0.5 rounded"
-                        >
-                          {interest}
-                        </span>
-                      ))}
-                    </div>
-                  )}
-                  <div className="flex items-center justify-between">
-                    <span className="font-bold text-green-600">
-                      ${Number(rec.gift.price).toFixed(2)}
-                    </span>
-                    <div className="flex gap-2">
-                      {rec.gift.affiliateUrl && (
-                        <Button size="sm" variant="outline" asChild>
-                          <a
-                            href={rec.gift.affiliateUrl}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            <ExternalLink className="w-3 h-3 mr-1" />
-                            View
-                          </a>
-                        </Button>
-                      )}
-                      <Button size="sm" variant="outline">
-                        <ListPlus className="w-4 h-4 mr-1" />
-                        Add
-                      </Button>
-                    </div>
-                  </div>
-                </CardContent>
-              </Card>
+              <GiftCard
+                key={rec.id}
+                sessionId={sessionId}
+                gift={{
+                  id: rec.gift.id,
+                  name: rec.gift.name,
+                  description: rec.gift.description,
+                  category: rec.gift.category,
+                  price: rec.gift.price,
+                  affiliateUrl: rec.gift.affiliateUrl,
+                }}
+                score={rec.score}
+                reasoning={rec.reasoning}
+                matchedInterests={(rec.matchedInterests as string[]) || []}
+                recommendationId={rec.id}
+                isInList={listItemGiftIds.includes(rec.gift.id)}
+              />
             ))
           ) : (
-            // Fallback placeholder if no real data
             <div className="col-span-2 text-center py-8">
               <p className="text-gray-500">
                 No recommendations found. Please try processing again.
@@ -199,11 +181,8 @@ export default async function ResultsPage({
       </div>
 
       {/* Actions */}
-      <div className="flex flex-col sm:flex-row gap-4 justify-center">
-        <Button size="lg" variant="secondary">
-          <Share2 className="w-4 h-4 mr-2" />
-          Share Results
-        </Button>
+      <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <ShareButton sessionId={sessionId} />
         <Link href="/">
           <Button size="lg" variant="outline">
             <RefreshCw className="w-4 h-4 mr-2" />
