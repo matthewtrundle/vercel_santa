@@ -8,15 +8,16 @@ import {
   ArrowLeft,
   Loader2,
   AlertCircle,
-  User,
-  Cake,
-  Heart,
-  Star,
-  MessageSquare,
+  Baby,
+  CakeSlice,
+  HeartHandshake,
+  Coins,
+  ScrollText,
   Sparkles,
+  Star,
   GraduationCap,
   Palette,
-  Trees,
+  TreePine,
   Cpu,
   BookOpen,
   Gamepad2,
@@ -49,7 +50,7 @@ const steps: FormStep[] = ['name', 'age', 'interests', 'budget', 'notes'];
 const interestConfig: Record<GiftCategory, { icon: LucideIcon; label: string; color: string }> = {
   educational: { icon: GraduationCap, label: 'Learning', color: 'text-blue-600' },
   creative: { icon: Palette, label: 'Creative', color: 'text-pink-600' },
-  outdoor: { icon: Trees, label: 'Outdoor', color: 'text-green-600' },
+  outdoor: { icon: TreePine, label: 'Outdoor', color: 'text-green-600' },
   tech: { icon: Cpu, label: 'Tech', color: 'text-purple-600' },
   books: { icon: BookOpen, label: 'Books', color: 'text-amber-600' },
   games: { icon: Gamepad2, label: 'Games', color: 'text-indigo-600' },
@@ -64,11 +65,11 @@ const interestConfig: Record<GiftCategory, { icon: LucideIcon; label: string; co
 };
 
 const stepIcons = {
-  name: User,
-  age: Cake,
-  interests: Heart,
-  budget: Star,
-  notes: MessageSquare,
+  name: Baby,
+  age: CakeSlice,
+  interests: HeartHandshake,
+  budget: Coins,
+  notes: ScrollText,
 };
 
 export function ModalQuestionForm({

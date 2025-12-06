@@ -1,16 +1,22 @@
 import type { Metadata } from 'next';
 import type { ReactElement, ReactNode } from 'react';
-import { Geist, Geist_Mono } from 'next/font/google';
+import { Quicksand, Mountains_of_Christmas } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/react';
+import { SpeedInsights } from '@vercel/speed-insights/next';
 import './globals.css';
 
-const geistSans = Geist({
-  variable: '--font-geist-sans',
+// Soft, rounded body font - friendly and approachable
+const quicksand = Quicksand({
+  variable: '--font-body',
   subsets: ['latin'],
+  weight: ['400', '500', '600', '700'],
 });
 
-const geistMono = Geist_Mono({
-  variable: '--font-geist-mono',
+// Fluffy, snowy display font for headings
+const mountainsOfChristmas = Mountains_of_Christmas({
+  variable: '--font-display',
   subsets: ['latin'],
+  weight: ['400', '700'],
 });
 
 export const metadata: Metadata = {
@@ -56,9 +62,11 @@ export default function RootLayout({ children }: RootLayoutProps): ReactElement 
   return (
     <html lang="en">
       <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen`}
+        className={`${quicksand.variable} ${mountainsOfChristmas.variable} antialiased min-h-screen`}
       >
         {children}
+        <Analytics />
+        <SpeedInsights />
       </body>
     </html>
   );

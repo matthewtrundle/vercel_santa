@@ -41,6 +41,7 @@ export const ageGroupEnum = pgEnum('age_group', [
   'early_school',
   'tween',
   'teen',
+  'adult',
 ]);
 
 // Sessions table - tracks workshop session state

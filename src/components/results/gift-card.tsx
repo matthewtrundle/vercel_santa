@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from 'react';
 import type { ReactElement } from 'react';
-import { ExternalLink, ListPlus, Check, Loader2 } from 'lucide-react';
+import { ExternalLink, ScrollText, Sparkles, Loader2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 import { addToSantaList, removeFromSantaList } from '@/actions/santa-list';
@@ -116,13 +116,13 @@ export function GiftCard({
                 <Loader2 className="w-4 h-4 animate-spin" />
               ) : isInList ? (
                 <>
-                  <Check className="w-4 h-4 mr-1" />
-                  Added
+                  <Sparkles className="w-4 h-4 mr-1" />
+                  On List!
                 </>
               ) : (
                 <>
-                  <ListPlus className="w-4 h-4 mr-1" />
-                  Add
+                  <ScrollText className="w-4 h-4 mr-1" />
+                  Add to List
                 </>
               )}
             </Button>

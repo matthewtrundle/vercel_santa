@@ -13,32 +13,32 @@ export interface ElfCharacter {
 
 export const AI_ELVES: ElfCharacter[] = [
   {
-    name: 'Pixel',
-    role: 'Image Elf',
+    name: 'Sparkle',
+    role: 'The Spotter',
     tool: 'magnifying-glass',
     color: '#FF6B6B',
-    description: 'Uses magical vision to spot interests in photos',
+    description: 'Has magical eyes that see what kids truly love',
   },
   {
-    name: 'Scribe',
-    role: 'Profile Elf',
+    name: 'Whiskers',
+    role: 'The Listener',
     tool: 'clipboard',
     color: '#4ECDC4',
-    description: 'Builds the perfect gift profile from clues',
+    description: 'Gathers wishes and dreams from every letter',
   },
   {
-    name: 'Matcher',
-    role: 'Gift Match Elf',
+    name: 'Jingles',
+    role: 'The Matchmaker',
     tool: 'gift',
     color: '#FFE66D',
-    description: 'Finds amazing gift matches from the warehouse',
+    description: 'Knows every toy in the workshop by heart',
   },
   {
     name: 'Quill',
-    role: 'Narration Elf',
+    role: 'The Storyteller',
     tool: 'scroll',
     color: '#95E1D3',
-    description: "Writes Santa's personal letter for the recipient",
+    description: "Writes Santa's famous personalized notes",
   },
 ];
 

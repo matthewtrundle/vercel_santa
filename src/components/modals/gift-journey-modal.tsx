@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactElement } from 'react';
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
 import { X, Camera, Sparkles, Gift, Loader2 } from 'lucide-react';
@@ -11,6 +11,14 @@ import { ProcessingView } from '@/components/workshop/processing-view';
 import { createSession } from '@/actions';
 import type { AgentStatus, AgentEvent } from '@/types';
 import { ModalQuestionForm } from './modal-question-form';
+import {
+  trackPhotoUploaded,
+  trackPhotoSkipped,
+  trackProfileCompleted,
+  trackProcessingStarted,
+  trackProcessingComplete,
+  trackProcessingError,
+} from '@/lib/analytics';
 
 type JourneyStep = 'upload' | 'questions' | 'processing' | 'complete';
 
@@ -48,6 +56,7 @@ export function GiftJourneyModal({
   });
   const [details, setDetails] = useState<Record<string, string>>({});
   const [outputs, setOutputs] = useState<Record<string, unknown>>({});
+  const processingStartTime = useRef<number>(0);
 
   // Create session on mount
   useEffect(() => {
@@ -80,9 +89,11 @@ export function GiftJourneyModal({
     }
   }, [step]);
 
-  const handleUploadComplete = useCallback(() => {
+  const handleUploadComplete = useCallback((_url: string) => {
     setHasUploaded(true);
     setError(null);
+    // Track photo upload - we don't have file details here, use defaults
+    trackPhotoUploaded(0, 'image/*');
   }, []);
 
   const handleUploadError = useCallback((errorMessage: string) => {
@@ -91,13 +102,25 @@ export function GiftJourneyModal({
   }, []);
 
   const handleContinueToQuestions = useCallback(() => {
+    if (!hasUploaded) {
+      trackPhotoSkipped();
+    }
     setStep('questions');
-  }, []);
+  }, [hasUploaded]);
 
   const handleQuestionsComplete = useCallback(async () => {
     if (!sessionId) return;
 
+    // Track profile completion
+    trackProfileCompleted({
+      hasPhoto: hasUploaded,
+      ageGroup: 'unknown', // Will be enhanced with actual form data
+      interestsCount: 0, // Will be enhanced with actual form data
+    });
+
     setStep('processing');
+    trackProcessingStarted();
+    processingStartTime.current = Date.now();
 
     try {
       const response = await fetch('/api/process', {
@@ -156,9 +179,15 @@ export function GiftJourneyModal({
 
               if (event.type === 'error') {
                 setError(event.error || 'An error occurred');
+                trackProcessingError(event.error || 'Unknown error');
               }
 
               if (event.type === 'complete') {
+                const duration = Date.now() - processingStartTime.current;
+                trackProcessingComplete({
+                  durationMs: duration,
+                  giftCount: Array.isArray(event.data) ? event.data.length : 0,
+                });
                 setStep('complete');
               }
             } catch (e) {
@@ -171,7 +200,7 @@ export function GiftJourneyModal({
       console.error('Processing error:', err);
       setError(err instanceof Error ? err.message : 'Processing failed');
     }
-  }, [sessionId]);
+  }, [sessionId, hasUploaded]);
 
   const handleViewResults = useCallback(() => {
     if (sessionId) {

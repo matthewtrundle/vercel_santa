@@ -2,124 +2,125 @@ import type { ReactElement } from 'react';
 import Link from 'next/link';
 import {
   Camera,
-  MessageSquare,
-  Sparkles,
+  ScrollText,
+  Wand2,
   Gift,
-  ArrowRight,
-  CheckCircle2,
-  Clock,
-  Shield,
+  ChevronsRight,
+  Snowflake,
+  Timer,
+  ShieldCheck,
+  Sparkle,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
 
 export const metadata = {
-  title: 'How It Works | Santa\'s AI Workshop',
-  description: 'Learn how our AI elves help find the perfect gifts for your loved ones',
+  title: 'How It Works | Santa\'s Workshop',
+  description: 'Learn how Santa\'s magical helper elves find the perfect gifts for your loved ones',
 };
 
 const steps = [
   {
     number: 1,
     icon: Camera,
-    title: 'Upload a Photo or Draw',
+    title: 'Share a Glimpse',
     description:
-      'Share a photo or draw what you\'re looking for! Our AI Image Elf will analyze it to spot interests, hobbies, and personality clues.',
+      'Show the elves a photo or draw a picture! They have magical eyes that can spot what makes each person special and unique.',
     tips: [
-      'Photos showing hobbies or activities work best',
-      'Draw something they love or want',
-      'Room or play area shots help identify interests',
+      'Photos with favorite toys or hobbies are wonderful',
+      'Drawings from the heart work just as well',
+      'Even a peek at their room tells a story',
     ],
   },
   {
     number: 2,
-    icon: MessageSquare,
-    title: 'Answer Questions',
+    icon: ScrollText,
+    title: 'Write Your Letter',
     description:
-      'Tell us about their age, interests, and your budget. Our Profile Elf combines this with photo insights to build a complete picture.',
+      'Tell Santa about who this gift is for. The more the elves know about their interests and dreams, the better the magic works!',
     tips: [
-      'Be specific about interests (e.g., "LEGO Star Wars" vs just "LEGO")',
-      'Mention any sensory preferences or restrictions',
-      'Include recent obsessions or phases',
+      'Share their favorite things to do',
+      'Mention what makes them smile',
+      'Every little detail helps the elves',
     ],
   },
   {
     number: 3,
-    icon: Sparkles,
+    icon: Wand2,
     title: 'Watch the Magic',
     description:
-      'Our team of 4 AI elves work together in real-time. Watch their progress as they analyze, match, and curate personalized recommendations.',
+      'Santa\'s four helper elves get to work! Each one has a special talent, and together they search through the entire toy workshop.',
     tips: [
-      'The process takes about 30-60 seconds',
-      'Each elf has a specialized role',
-      'You\'ll see live updates as they work',
+      'The elves work their magic in about a minute',
+      'Watch as each helper does their part',
+      'You\'ll see sparkles as they find matches',
     ],
   },
   {
     number: 4,
     icon: Gift,
-    title: 'Get Your Gifts',
+    title: 'Open Your List',
     description:
-      'Receive personalized gift recommendations with a special note from Santa explaining why each gift was chosen. Save favorites to your Santa List!',
+      'Discover hand-picked gift ideas with a personal note from Santa himself! Save your favorites to your very own Christmas list.',
     tips: [
-      'Each recommendation includes match reasoning',
-      'Click "Add to List" to save favorites',
-      'Share your Santa List with family members',
+      'Santa explains why each gift was chosen',
+      'Add favorites to your wish list',
+      'Share with grandparents and family',
     ],
   },
 ];
 
 const elves = [
   {
-    name: 'Image Elf',
-    emoji: '🔍',
-    role: 'Vision Specialist',
+    name: 'Sparkle',
+    emoji: '✨',
+    role: 'The Spotter',
     description:
-      'Analyzes photos using advanced AI vision to identify interests, hobbies, and personality traits.',
+      'Has magical eyes that can see what kids truly love, even from just a picture or drawing.',
   },
   {
-    name: 'Profile Elf',
-    emoji: '📋',
-    role: 'Data Curator',
+    name: 'Whiskers',
+    emoji: '📜',
+    role: 'The Listener',
     description:
-      'Combines photo insights with your answers to build a comprehensive gift profile.',
+      'Reads every letter carefully and remembers every wish, no matter how small.',
   },
   {
-    name: 'Gift Match Elf',
+    name: 'Jingles',
     emoji: '🎁',
-    role: 'Recommendation Engine',
+    role: 'The Matchmaker',
     description:
-      'Searches our curated inventory and ranks gifts based on profile match and age appropriateness.',
+      'Knows every single toy in the workshop and finds perfect matches with a jingle of bells.',
   },
   {
-    name: 'Narration Elf',
-    emoji: '✉️',
-    role: 'Storyteller',
+    name: 'Quill',
+    emoji: '🪶',
+    role: 'The Storyteller',
     description:
-      'Writes a personalized note from Santa explaining why each gift was chosen.',
+      'Writes Santa\'s famous letters with enchanted ink that sparkles on the page.',
   },
 ];
 
 const faqs = [
   {
-    question: 'How accurate are the recommendations?',
+    question: 'How do the elves know what to recommend?',
     answer:
-      'Our AI elves analyze multiple data points including photo content, stated interests, age, and budget to provide highly relevant suggestions. The more information you provide, the better the matches!',
+      'The elves have centuries of experience and a touch of Christmas magic! They look at photos, read your letter carefully, and use their special talents to find gifts that feel just right. The more you share, the better they can help!',
   },
   {
     question: 'What happens to my photos?',
     answer:
-      'Photos are processed securely and used only for analysis. They\'re stored temporarily and can be deleted at any time. We never share photos with third parties.',
+      'Your photos stay safe in Santa\'s workshop. They\'re only used to help the elves find great gifts, and you can ask us to remove them anytime. Santa\'s honor!',
   },
   {
-    question: 'How long does the process take?',
+    question: 'How long does the magic take?',
     answer:
-      'The full analysis typically takes 30-60 seconds. You\'ll see real-time updates from each elf as they work their magic.',
+      'The elves work fast! Usually about a minute. You\'ll see each elf doing their part as they sprinkle their special magic on your request.',
   },
   {
-    question: 'Can I save recommendations for later?',
+    question: 'Can I save my gift ideas?',
     answer:
-      'Yes! Add any recommendation to your Santa List, then share the unique link with family members so they know what to get.',
+      'Absolutely! Add any gift to your Santa List and share the special link with grandparents, aunts, uncles, and anyone who wants to make Christmas morning magical.',
   },
 ];
 
@@ -130,24 +131,24 @@ export default function HowItWorksPage(): ReactElement {
       <section className="bg-gradient-to-b from-red-50 to-white py-16 md:py-24">
         <div className="container mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            How <span className="text-red-600">Santa&apos;s AI Workshop</span> Works
+            How the <span className="text-red-600">Magic</span> Works
           </h1>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto mb-8">
-            Our team of specialized AI elves work together to find the perfect
-            gifts for your loved ones. Here&apos;s how the magic happens.
+            Santa&apos;s four helper elves have been finding perfect gifts for
+            centuries. Here&apos;s how they work their Christmas magic!
           </p>
           <div className="flex flex-wrap justify-center gap-6">
             <div className="flex items-center gap-2 text-gray-600">
-              <Clock className="w-5 h-5 text-red-600" />
-              <span>Takes ~2 minutes</span>
+              <Timer className="w-5 h-5 text-red-600" />
+              <span>Quick as a sleigh ride</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">
-              <Shield className="w-5 h-5 text-green-600" />
-              <span>Privacy protected</span>
+              <ShieldCheck className="w-5 h-5 text-green-600" />
+              <span>Santa&apos;s honor</span>
             </div>
             <div className="flex items-center gap-2 text-gray-600">
-              <Gift className="w-5 h-5 text-red-600" />
-              <span>Free to use</span>
+              <Snowflake className="w-5 h-5 text-blue-500" />
+              <span>Always free</span>
             </div>
           </div>
         </div>
@@ -157,7 +158,7 @@ export default function HowItWorksPage(): ReactElement {
       <section className="py-16 md:py-24">
         <div className="container mx-auto px-4">
           <h2 className="text-3xl font-bold text-center mb-12">
-            The 4-Step Journey
+            Your Journey to the Perfect Gift
           </h2>
           <div className="space-y-12 max-w-4xl mx-auto">
             {steps.map((step, index) => (
@@ -188,7 +189,7 @@ export default function HowItWorksPage(): ReactElement {
                             key={tip}
                             className="flex items-start gap-2 text-sm text-gray-500"
                           >
-                            <CheckCircle2 className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
+                            <Sparkle className="w-4 h-4 text-amber-500 mt-0.5 flex-shrink-0" />
                             <span>{tip}</span>
                           </div>
                         ))}
@@ -198,7 +199,7 @@ export default function HowItWorksPage(): ReactElement {
                 </div>
                 {index < steps.length - 1 && (
                   <div className="hidden md:flex items-center justify-center w-12">
-                    <ArrowRight className="w-6 h-6 text-gray-300 rotate-90 md:rotate-0" />
+                    <ChevronsRight className="w-6 h-6 text-red-300 rotate-90 md:rotate-0" />
                   </div>
                 )}
               </div>
@@ -211,10 +212,10 @@ export default function HowItWorksPage(): ReactElement {
       <section className="py-16 md:py-24 bg-gradient-to-b from-white to-green-50">
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
-            <h2 className="text-3xl font-bold mb-4">Meet the AI Elves</h2>
+            <h2 className="text-3xl font-bold mb-4">Meet Santa&apos;s Helper Elves</h2>
             <p className="text-gray-600 max-w-2xl mx-auto">
-              Each elf is a specialized AI agent with a unique role. They
-              collaborate in sequence to deliver personalized recommendations.
+              These four magical elves have worked at the North Pole for centuries.
+              Each has a special gift that makes finding the perfect present possible!
             </p>
           </div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-5xl mx-auto">

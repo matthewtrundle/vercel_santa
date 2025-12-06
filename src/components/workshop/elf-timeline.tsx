@@ -3,13 +3,13 @@
 import type { ReactElement } from 'react';
 import { cn } from '@/lib/utils';
 import {
-  Search,
-  UserCircle,
+  Eye,
+  Sparkles,
   Gift,
-  Scroll,
+  ScrollText,
   Loader2,
-  Check,
-  AlertCircle,
+  Snowflake,
+  AlertTriangle,
   ChevronDown,
   ChevronUp,
 } from 'lucide-react';
@@ -20,7 +20,7 @@ interface ElfStep {
   id: string;
   name: string;
   description: string;
-  icon: typeof Search;
+  icon: typeof Eye;
   emoji: string;
   behindTheScenes: string[];
 }
@@ -28,54 +28,54 @@ interface ElfStep {
 const elfSteps: ElfStep[] = [
   {
     id: 'image',
-    name: 'Image Elf',
-    description: 'Analyzing the photo for clues...',
-    icon: Search,
-    emoji: '🔍',
+    name: 'Sparkle the Spotter',
+    description: 'Looking for clues in your photo...',
+    icon: Eye,
+    emoji: '✨',
     behindTheScenes: [
-      'Uses GPT-4 Vision to analyze uploaded photos',
-      'Detects interests from toys, clothing, room decor',
-      'Identifies age-appropriate characteristics',
-      'Extracts color preferences from clothing',
+      'Using magical eyes to spot interests',
+      'Noticing favorite toys and decorations',
+      'Seeing what colors make them happy',
+      'Finding personality clues everywhere',
     ],
   },
   {
     id: 'profile',
-    name: 'Profile Elf',
-    description: 'Building the perfect profile...',
-    icon: UserCircle,
-    emoji: '📋',
+    name: 'Whiskers the Listener',
+    description: 'Reading your letter to Santa...',
+    icon: Sparkles,
+    emoji: '📜',
     behindTheScenes: [
-      'Combines your answers with photo insights',
-      'Categorizes interests by type and priority',
-      'Determines personality traits for better matches',
-      'Sets appropriate gift categories and budget tier',
+      'Remembering every wish you shared',
+      'Connecting all the dots together',
+      'Understanding what makes them special',
+      'Creating the perfect gift profile',
     ],
   },
   {
     id: 'gift-match',
-    name: 'Gift Match Elf',
-    description: 'Finding amazing gift matches...',
+    name: 'Jingles the Matchmaker',
+    description: 'Searching the workshop for treasures...',
     icon: Gift,
     emoji: '🎁',
     behindTheScenes: [
-      'Queries database of 450+ curated gifts',
-      'AI scores each gift against the profile',
-      'Ranks matches by relevance and age fit',
-      'Generates personalized reasoning for each pick',
+      'Running through the toy warehouse',
+      'Checking every shelf and corner',
+      'Finding gifts that feel just right',
+      'Picking the very best matches',
     ],
   },
   {
     id: 'narration',
-    name: 'Narration Elf',
+    name: 'Quill the Storyteller',
     description: "Writing Santa's personal note...",
-    icon: Scroll,
-    emoji: '✉️',
+    icon: ScrollText,
+    emoji: '🪶',
     behindTheScenes: [
-      'Reviews all gift recommendations',
-      'Crafts a personalized letter from Santa',
-      'Explains why each gift was chosen',
-      'Adds holiday magic and encouragement',
+      'Dipping the enchanted quill in ink',
+      'Writing why each gift was chosen',
+      'Adding Santa\'s warm wishes',
+      'Sealing with a touch of magic',
     ],
   },
 ];
@@ -139,8 +139,8 @@ export function ElfTimeline({
                 {isActive && (
                   <Loader2 className="w-6 h-6 text-red-600 animate-spin" />
                 )}
-                {isCompleted && <Check className="w-6 h-6 text-green-600" />}
-                {isFailed && <AlertCircle className="w-6 h-6 text-red-600" />}
+                {isCompleted && <Snowflake className="w-6 h-6 text-green-600" />}
+                {isFailed && <AlertTriangle className="w-6 h-6 text-red-600" />}
                 {status === 'pending' && (
                   <span className="text-2xl">{elf.emoji}</span>
                 )}

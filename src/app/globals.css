@@ -35,8 +35,8 @@
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-body);
+  --font-display: var(--font-display);
 
   /* Custom colors */
   --color-santa-red: var(--santa-red);
@@ -51,8 +51,18 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: var(--font-sans), Arial, Helvetica, sans-serif;
+  font-family: var(--font-body), 'Quicksand', Arial, Helvetica, sans-serif;
   min-height: 100vh;
+}
+
+/* Fluffy display font for headings */
+h1, h2, h3, .font-display {
+  font-family: var(--font-display), 'Mountains of Christmas', cursive;
+}
+
+/* Utility class for display font */
+.font-christmas {
+  font-family: var(--font-display), 'Mountains of Christmas', cursive;
 }
 
 /* Snowfall animation keyframes */
@@ -204,6 +214,187 @@ body {
 /* Smooth scroll behavior */
 html {
   scroll-behavior: smooth;
+}
+
+/* =====================================================
+   ORGANIC DESIGN SYSTEM - Less AI, More Magic
+   ===================================================== */
+
+/* Organic blob border radius variations */
+.organic-blob-1 {
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+}
+
+.organic-blob-2 {
+  border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%;
+}
+
+.organic-blob-3 {
+  border-radius: 40% 60% 60% 40% / 70% 30% 70% 30%;
+}
+
+.organic-blob-4 {
+  border-radius: 70% 30% 30% 70% / 40% 60% 40% 60%;
+}
+
+/* Playful tilt variations */
+.tilt-1 { transform: rotate(-2deg); }
+.tilt-2 { transform: rotate(2deg); }
+.tilt-3 { transform: rotate(-1deg); }
+.tilt-4 { transform: rotate(1.5deg); }
+.tilt-hover:hover { transform: rotate(3deg) scale(1.02); }
+
+/* Staggered animation delays */
+.stagger-1 { animation-delay: 0.1s; }
+.stagger-2 { animation-delay: 0.2s; }
+.stagger-3 { animation-delay: 0.3s; }
+.stagger-4 { animation-delay: 0.4s; }
+.stagger-5 { animation-delay: 0.5s; }
+
+/* Hand-drawn border effect using shadows */
+.hand-drawn-border {
+  box-shadow:
+    2px 2px 0 rgba(0,0,0,0.1),
+    -1px -1px 0 rgba(0,0,0,0.05),
+    3px 0 0 rgba(0,0,0,0.05),
+    0 3px 0 rgba(0,0,0,0.05);
+  border: 2px solid currentColor;
+}
+
+/* Wavy underline for text */
+.wavy-underline {
+  text-decoration: underline;
+  text-decoration-style: wavy;
+  text-underline-offset: 4px;
+}
+
+/* Organic shadow with color tint */
+.organic-shadow-red {
+  box-shadow:
+    0 10px 40px -10px rgba(196, 30, 58, 0.3),
+    0 4px 6px -2px rgba(196, 30, 58, 0.1);
+}
+
+.organic-shadow-green {
+  box-shadow:
+    0 10px 40px -10px rgba(34, 139, 34, 0.3),
+    0 4px 6px -2px rgba(34, 139, 34, 0.1);
+}
+
+.organic-shadow-gold {
+  box-shadow:
+    0 10px 40px -10px rgba(255, 215, 0, 0.4),
+    0 4px 6px -2px rgba(255, 215, 0, 0.2);
+}
+
+/* Asymmetric layouts helper */
+.asymmetric-grid {
+  display: grid;
+  grid-template-columns: 1fr 1.3fr;
+  gap: 2rem;
+}
+
+.asymmetric-grid-reverse {
+  display: grid;
+  grid-template-columns: 1.3fr 1fr;
+  gap: 2rem;
+}
+
+/* Scattered layout - items not perfectly aligned */
+.scattered-layout > *:nth-child(odd) {
+  transform: translateY(-8px) rotate(-1deg);
+}
+
+.scattered-layout > *:nth-child(even) {
+  transform: translateY(8px) rotate(1deg);
+}
+
+/* Organic morphing animation */
+@keyframes morphBlob {
+  0%, 100% {
+    border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  }
+  25% {
+    border-radius: 58% 42% 75% 25% / 76% 46% 54% 24%;
+  }
+  50% {
+    border-radius: 50% 50% 33% 67% / 55% 27% 73% 45%;
+  }
+  75% {
+    border-radius: 33% 67% 58% 42% / 63% 68% 32% 37%;
+  }
+}
+
+.animate-morph {
+  animation: morphBlob 8s ease-in-out infinite;
+}
+
+/* Wiggle animation for playful elements */
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+
+.animate-wiggle {
+  animation: wiggle 2s ease-in-out infinite;
+}
+
+/* Swing animation for hanging ornaments */
+@keyframes swing {
+  0%, 100% { transform: rotate(-5deg); transform-origin: top center; }
+  50% { transform: rotate(5deg); transform-origin: top center; }
+}
+
+.animate-swing {
+  animation: swing 3s ease-in-out infinite;
+}
+
+/* Organic hover states */
+.organic-hover {
+  transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.organic-hover:hover {
+  transform: translateY(-5px) rotate(1deg);
+  box-shadow: 0 20px 40px -15px rgba(0, 0, 0, 0.2);
+}
+
+/* Clip paths for organic shapes */
+.clip-wave-top {
+  clip-path: polygon(0 10%, 100% 0, 100% 100%, 0 100%);
+}
+
+.clip-wave-bottom {
+  clip-path: polygon(0 0, 100% 0, 100% 90%, 0 100%);
+}
+
+.clip-diagonal {
+  clip-path: polygon(0 0, 100% 5%, 100% 95%, 0 100%);
+}
+
+.clip-tag {
+  clip-path: polygon(0 10%, 50% 0, 100% 10%, 100% 100%, 0 100%);
+}
+
+/* Candy cane stripe pattern */
+.candy-stripe {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--santa-red),
+    var(--santa-red) 10px,
+    white 10px,
+    white 20px
+  );
+}
+
+.candy-stripe-green {
+  background: repeating-linear-gradient(
+    45deg,
+    var(--christmas-green),
+    var(--christmas-green) 10px,
+    white 10px,
+    white 20px
+  );
 }
 
 /* Reduce motion for accessibility */

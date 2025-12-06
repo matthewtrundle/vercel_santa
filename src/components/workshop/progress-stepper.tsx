@@ -2,21 +2,21 @@
 
 import type { ReactElement } from 'react';
 import { cn } from '@/lib/utils';
-import { Check, Upload, ClipboardList, Sparkles, Gift } from 'lucide-react';
+import { Check, Camera, Scroll, Wand2, Gift } from 'lucide-react';
 
 export type WorkshopStep = 'upload' | 'questions' | 'processing' | 'results';
 
 interface Step {
   id: WorkshopStep;
   label: string;
-  icon: typeof Upload;
+  icon: typeof Camera;
 }
 
 const steps: Step[] = [
-  { id: 'upload', label: 'Upload Photo', icon: Upload },
-  { id: 'questions', label: 'Tell Us More', icon: ClipboardList },
-  { id: 'processing', label: 'Elf Magic', icon: Sparkles },
-  { id: 'results', label: 'Gift Ideas', icon: Gift },
+  { id: 'upload', label: 'Share Photo', icon: Camera },
+  { id: 'questions', label: 'Dear Santa', icon: Scroll },
+  { id: 'processing', label: 'Elf Magic', icon: Wand2 },
+  { id: 'results', label: 'Presents!', icon: Gift },
 ];
 
 interface ProgressStepperProps {

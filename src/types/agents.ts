@@ -6,7 +6,8 @@ export type AgeGroupCategory =
   | 'preschool'
   | 'early_school'
   | 'tween'
-  | 'teen';
+  | 'teen'
+  | 'adult';
 
 // Budget tiers
 export type BudgetTier = 'budget' | 'moderate' | 'premium';
