@@ -96,8 +96,9 @@ export function GiftCard({
         )}
 
         <div className="flex items-center justify-between">
-          <span className="font-bold text-green-600">
-            ${Number(gift.price).toFixed(2)}
+          <span className="font-bold text-amber-600 flex items-center gap-1">
+            <span className="text-amber-500">&#9733;</span>
+            {Math.round(Number(gift.price))} Nice Points
           </span>
           <div className="flex gap-2">
             {gift.affiliateUrl && (

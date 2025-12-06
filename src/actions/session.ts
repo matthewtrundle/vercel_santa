@@ -88,3 +88,47 @@ export async function getSessionWithProfile(sessionId: string) {
     profile: profile ?? null,
   };
 }
+
+export async function updateSessionNicePoints(
+  sessionId: string,
+  nicePoints: number
+): Promise<Session | null> {
+  const [existingSession] = await db
+    .select()
+    .from(sessions)
+    .where(eq(sessions.id, sessionId))
+    .limit(1);
+
+  if (!existingSession) return null;
+
+  const currentMetadata = (existingSession.metadata as Record<string, unknown>) || {};
+
+  const [session] = await db
+    .update(sessions)
+    .set({
+      metadata: {
+        ...currentMetadata,
+        nicePoints,
+        nicePointsRevealedAt: new Date().toISOString(),
+      },
+      updatedAt: new Date(),
+    })
+    .where(eq(sessions.id, sessionId))
+    .returning();
+
+  revalidatePath(`/workshop/${sessionId}`);
+  return session ?? null;
+}
+
+export async function getSessionNicePoints(sessionId: string): Promise<number | null> {
+  const [session] = await db
+    .select()
+    .from(sessions)
+    .where(eq(sessions.id, sessionId))
+    .limit(1);
+
+  if (!session) return null;
+
+  const metadata = session.metadata as Record<string, unknown> | null;
+  return (metadata?.nicePoints as number) ?? null;
+}

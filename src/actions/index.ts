@@ -5,6 +5,8 @@ export {
   updateSessionPhoto,
   startWorkshopSession,
   getSessionWithProfile,
+  updateSessionNicePoints,
+  getSessionNicePoints,
 } from './session';
 
 export {

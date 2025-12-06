@@ -117,7 +117,7 @@ export async function runGiftMatchElf(
     const candidateList = candidates
       .map(
         (g) =>
-          `- ID: ${g.id} | Name: ${g.name} | Category: ${g.category} | Price: $${g.price} | Description: ${g.description.slice(0, 100)}...`
+          `- ID: ${g.id} | Name: ${g.name} | Category: ${g.category} | Nice Points: ${Math.round(Number(g.price))} | Description: ${g.description.slice(0, 100)}...`
       )
       .join('\n');
 

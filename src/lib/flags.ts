@@ -22,6 +22,9 @@ export interface FeatureFlags {
   // A/B test: Gift results layout
   resultsLayout: 'grid' | 'list';
 
+  // A/B test: Spinner shows coal (naughty theme) vs no coal (nice theme only)
+  spinnerShowCoal: boolean;
+
   // Feature: Show elf "behind the scenes" by default
   expandElfDetails: boolean;
 
@@ -41,6 +44,7 @@ const defaultFlags: FeatureFlags = {
   requirePhoto: true,
   shortForm: false,
   resultsLayout: 'grid',
+  spinnerShowCoal: false, // Default to nice-only theme
   expandElfDetails: false,
   enableSharing: true,
   showProcessingFacts: true,

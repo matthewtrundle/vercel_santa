@@ -11,7 +11,7 @@ import {
   User,
   Cake,
   Heart,
-  DollarSign,
+  Star,
   MessageSquare,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -128,7 +128,7 @@ export function QuestionForm({
           throw new Error(result.error);
         }
 
-        router.push(`/workshop/${sessionId}/processing`);
+        router.push(`/workshop/${sessionId}/spinner`);
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Failed to save. Please try again.'
@@ -246,18 +246,18 @@ export function QuestionForm({
         {/* Budget step */}
         {currentStep === 'budget' && (
           <div className="text-center">
-            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-red-100 mb-4">
-              <DollarSign className="w-7 h-7 text-red-600" />
+            <div className="inline-flex items-center justify-center w-14 h-14 rounded-full bg-amber-100 mb-4">
+              <Star className="w-7 h-7 text-amber-600" />
             </div>
-            <h2 className="text-2xl font-bold mb-2">What&apos;s your budget?</h2>
+            <h2 className="text-2xl font-bold mb-2">Gift tier preference?</h2>
             <p className="text-gray-600 mb-6">
-              We&apos;ll find gifts that fit your range
+              Choose the Nice Points range for gifts
             </p>
             <div className="flex flex-col gap-3 max-w-xs mx-auto">
               {[
-                { value: 'low' as const, label: 'Budget Friendly', range: 'Under $25' },
-                { value: 'medium' as const, label: 'Moderate', range: '$25 - $75' },
-                { value: 'high' as const, label: 'Premium', range: '$75+' },
+                { value: 'low' as const, label: 'Stocking Stuffers', range: 'Under 25 Nice Points' },
+                { value: 'medium' as const, label: 'Under the Tree', range: '25 - 75 Nice Points' },
+                { value: 'high' as const, label: 'Special Surprise', range: '75+ Nice Points' },
               ].map((option) => (
                 <button
                   key={option.value}
