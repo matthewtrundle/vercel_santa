@@ -20,12 +20,27 @@ export function MusicPlayer(): ReactElement {
     audio.loop = true;
     audio.volume = 0.3; // 30% volume - not too loud
     audio.preload = 'auto';
-    
-    audio.addEventListener('canplaythrough', () => {
+
+    const handleLoaded = () => {
+      setIsLoaded(true);
+    };
+
+    // Multiple events for cross-browser compatibility
+    audio.addEventListener('canplaythrough', handleLoaded);
+    audio.addEventListener('canplay', handleLoaded);
+    audio.addEventListener('loadeddata', handleLoaded);
+
+    // Handle errors
+    audio.addEventListener('error', (e) => {
+      console.error('Audio failed to load:', e);
+      // Still enable button so user can try
       setIsLoaded(true);
     });
 
     audioRef.current = audio;
+
+    // Force load
+    audio.load();
 
     // Hide tooltip after 5 seconds
     const tooltipTimer = setTimeout(() => {
@@ -35,21 +50,35 @@ export function MusicPlayer(): ReactElement {
     return () => {
       audio.pause();
       audio.src = '';
+      audio.removeEventListener('canplaythrough', handleLoaded);
+      audio.removeEventListener('canplay', handleLoaded);
+      audio.removeEventListener('loadeddata', handleLoaded);
       clearTimeout(tooltipTimer);
     };
   }, []);
 
-  const toggleMusic = () => {
+  const toggleMusic = async () => {
     if (!audioRef.current) return;
 
     if (isPlaying) {
       audioRef.current.pause();
+      setIsPlaying(false);
     } else {
-      audioRef.current.play().catch(() => {
-        // Browser blocked autoplay - that's fine, user will click again
-      });
+      try {
+        await audioRef.current.play();
+        setIsPlaying(true);
+      } catch (err) {
+        console.error('Failed to play audio:', err);
+        // Try reloading and playing again
+        audioRef.current.load();
+        try {
+          await audioRef.current.play();
+          setIsPlaying(true);
+        } catch (retryErr) {
+          console.error('Retry also failed:', retryErr);
+        }
+      }
     }
-    setIsPlaying(!isPlaying);
     setShowTooltip(false);
   };
 
