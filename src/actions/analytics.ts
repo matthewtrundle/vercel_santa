@@ -11,7 +11,7 @@ import {
   agentRuns,
   giftInventory,
 } from '@/db/schema';
-import { eq, sql, desc, count, avg, gte } from 'drizzle-orm';
+import { eq, sql, desc, count, avg, gte, inArray } from 'drizzle-orm';
 
 // Track a custom analytics event
 export async function trackAnalyticsEvent(
@@ -204,6 +204,12 @@ export async function getRecentSessions(limit: number = 20) {
 
   // Get associated profiles for these sessions
   const sessionIds = recentSessions.map((s) => s.id);
+
+  // Handle empty array case
+  if (sessionIds.length === 0) {
+    return [];
+  }
+
   const profiles = await db
     .select({
       sessionId: kidProfiles.sessionId,
@@ -213,7 +219,7 @@ export async function getRecentSessions(limit: number = 20) {
       budgetTier: kidProfiles.budgetTier,
     })
     .from(kidProfiles)
-    .where(sql`${kidProfiles.sessionId} = ANY(${sessionIds})`);
+    .where(inArray(kidProfiles.sessionId, sessionIds));
 
   // Get recommendation counts
   const recCounts = await db
@@ -222,7 +228,7 @@ export async function getRecentSessions(limit: number = 20) {
       count: count(),
     })
     .from(recommendations)
-    .where(sql`${recommendations.sessionId} = ANY(${sessionIds})`)
+    .where(inArray(recommendations.sessionId, sessionIds))
     .groupBy(recommendations.sessionId);
 
   // Get list item counts
@@ -234,7 +240,7 @@ export async function getRecentSessions(limit: number = 20) {
     })
     .from(santaLists)
     .leftJoin(santaListItems, eq(santaListItems.listId, santaLists.id))
-    .where(sql`${santaLists.sessionId} = ANY(${sessionIds})`)
+    .where(inArray(santaLists.sessionId, sessionIds))
     .groupBy(santaLists.sessionId);
 
   // Combine data
