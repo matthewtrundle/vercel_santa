@@ -1,156 +1,124 @@
-import { get } from '@vercel/edge-config';
-import { cookies } from 'next/headers';
+import { flag } from 'flags/next';
 
 /**
- * Feature Flags for Santa's Workshop
+ * Vercel Flags SDK configuration for Santa's Workshop.
  *
- * Uses Vercel Edge Config for instant flag reads (<15ms)
- * Supports A/B testing with consistent user bucketing
+ * These flags automatically integrate with:
+ * - Vercel Web Analytics (flag values are tracked)
+ * - Vercel Toolbar (can override flags in development)
+ * - Edge Middleware (for personalization)
  */
-
-// Feature flag types
-export interface FeatureFlags {
-  // A/B test: Hero CTA copy variant
-  ctaVariant: 'A' | 'B' | 'C';
-
-  // A/B test: Photo upload required or optional
-  requirePhoto: boolean;
-
-  // A/B test: Short form (3 questions) vs full form (5 questions)
-  shortForm: boolean;
-
-  // A/B test: Gift results layout
-  resultsLayout: 'grid' | 'list';
-
-  // A/B test: Spinner shows coal (naughty theme) vs no coal (nice theme only)
-  spinnerShowCoal: boolean;
-
-  // Feature: Show elf "behind the scenes" by default
-  expandElfDetails: boolean;
-
-  // Feature: Enable list sharing
-  enableSharing: boolean;
-
-  // Feature: Show processing fun facts
-  showProcessingFacts: boolean;
-
-  // Maintenance mode
-  maintenanceMode: boolean;
-}
-
-// Default values when Edge Config is unavailable
-const defaultFlags: FeatureFlags = {
-  ctaVariant: 'A',
-  requirePhoto: true,
-  shortForm: false,
-  resultsLayout: 'grid',
-  spinnerShowCoal: false, // Default to nice-only theme
-  expandElfDetails: false,
-  enableSharing: true,
-  showProcessingFacts: true,
-  maintenanceMode: false,
-};
 
 /**
- * Get all feature flags from Edge Config
- * Falls back to defaults if Edge Config is not configured
+ * Beta Features Flag
+ * Enable experimental features for testing
  */
-export async function getFeatureFlags(): Promise<FeatureFlags> {
-  try {
-    const flags = await get<Partial<FeatureFlags>>('featureFlags');
-    return { ...defaultFlags, ...flags };
-  } catch {
-    // Edge Config not configured or error - use defaults
-    console.warn('Edge Config unavailable, using default feature flags');
-    return defaultFlags;
-  }
-}
-
-/**
- * Get a single feature flag value
- */
-export async function getFlag<K extends keyof FeatureFlags>(
-  key: K
-): Promise<FeatureFlags[K]> {
-  try {
-    const value = await get<FeatureFlags[K]>(key);
-    return value ?? defaultFlags[key];
-  } catch {
-    return defaultFlags[key];
-  }
-}
-
-// A/B Testing utilities
-
-/**
- * Get or create a consistent user bucket ID for A/B testing
- * Uses cookies to ensure users see consistent variants
- */
-export async function getUserBucket(): Promise<string> {
-  const cookieStore = await cookies();
-  const existingBucket = cookieStore.get('ab_bucket')?.value;
-
-  if (existingBucket) {
-    return existingBucket;
-  }
-
-  // Generate new bucket ID (will be set by middleware)
-  return Math.random().toString(36).substring(2, 10);
-}
-
-/**
- * Determine which variant a user should see based on their bucket
- */
-export function getVariant<T>(bucket: string, variants: T[], weights?: number[]): T {
-  // Simple hash function to convert bucket to number
-  const hash = bucket.split('').reduce((acc, char) => {
-    return ((acc << 5) - acc + char.charCodeAt(0)) | 0;
-  }, 0);
-
-  const normalizedHash = Math.abs(hash) % 100;
-
-  if (weights && weights.length === variants.length) {
-    // Weighted distribution
-    let cumulative = 0;
-    for (let i = 0; i < weights.length; i++) {
-      cumulative += weights[i];
-      if (normalizedHash < cumulative) {
-        return variants[i];
-      }
-    }
-  }
-
-  // Equal distribution
-  const index = normalizedHash % variants.length;
-  return variants[index];
-}
-
-// CTA Variants for A/B testing
-export const CTA_VARIANTS = {
-  A: {
-    text: 'Start Your Gift Journey',
-    subtext: 'Find perfect gifts in 2 minutes',
+export const betaFeaturesFlag = flag<boolean>({
+  key: 'beta-features',
+  description: 'Enable beta features for testers',
+  defaultValue: false,
+  decide: async () => {
+    // Could add logic based on user, % rollout, etc.
+    // For demo, check environment variable
+    return process.env.ENABLE_BETA_FEATURES === 'true';
   },
-  B: {
-    text: 'Find Perfect Gifts Now',
-    subtext: "Let Santa's elves help you",
-  },
-  C: {
-    text: 'Let the Magic Begin',
-    subtext: 'Discover personalized gift ideas',
-  },
-} as const;
+  options: [
+    { value: true, label: 'Enabled' },
+    { value: false, label: 'Disabled' },
+  ],
+});
 
 /**
- * Get CTA content based on variant flag
+ * New Reindeer Animations Flag
+ * Toggle enhanced animation styles
  */
-export function getCTAContent(variant: FeatureFlags['ctaVariant']): {
-  text: string;
-  subtext: string;
-} {
-  return CTA_VARIANTS[variant];
-}
+export const newReindeerAnimationsFlag = flag<boolean>({
+  key: 'new-reindeer-animations',
+  description: 'Enable new reindeer animation styles',
+  defaultValue: false,
+  decide: async () => {
+    // 20% rollout
+    return Math.random() < 0.2;
+  },
+  options: [
+    { value: true, label: 'New Animations' },
+    { value: false, label: 'Classic Animations' },
+  ],
+});
 
-// Type exports for components
-export type CTAVariant = FeatureFlags['ctaVariant'];
-export type ResultsLayout = FeatureFlags['resultsLayout'];
+/**
+ * AI Model Upgrade Flag
+ * Use upgraded AI models for recommendations
+ */
+export const aiModelUpgradeFlag = flag<boolean>({
+  key: 'ai-model-upgrade',
+  description: 'Use upgraded AI models for better recommendations',
+  defaultValue: true,
+  decide: async () => {
+    return true; // Always use upgraded models
+  },
+  options: [
+    { value: true, label: 'Upgraded Models' },
+    { value: false, label: 'Standard Models' },
+  ],
+});
+
+/**
+ * Recommendation Algorithm Experiment
+ * A/B test different recommendation strategies
+ */
+export const recommendationAlgorithmFlag = flag<'default' | 'collaborative' | 'content-based'>({
+  key: 'recommendation-algorithm',
+  description: 'Which recommendation algorithm to use',
+  defaultValue: 'default',
+  decide: async () => {
+    const rand = Math.random();
+    if (rand < 0.33) return 'collaborative';
+    if (rand < 0.66) return 'content-based';
+    return 'default';
+  },
+  options: [
+    { value: 'default', label: 'Default Algorithm' },
+    { value: 'collaborative', label: 'Collaborative Filtering' },
+    { value: 'content-based', label: 'Content-Based' },
+  ],
+});
+
+/**
+ * Workshop Layout Experiment
+ * A/B test different UI layouts
+ */
+export const workshopLayoutFlag = flag<'classic' | 'modern' | 'minimal'>({
+  key: 'workshop-layout',
+  description: 'Which workshop UI layout to show',
+  defaultValue: 'classic',
+  decide: async () => {
+    const rand = Math.random();
+    if (rand < 0.33) return 'modern';
+    if (rand < 0.66) return 'minimal';
+    return 'classic';
+  },
+  options: [
+    { value: 'classic', label: 'Classic Layout' },
+    { value: 'modern', label: 'Modern Layout' },
+    { value: 'minimal', label: 'Minimal Layout' },
+  ],
+});
+
+/**
+ * Spinner Coal Flag
+ * A/B test whether to show coal option in Nice Points spinner
+ */
+export const spinnerShowCoalFlag = flag<boolean>({
+  key: 'spinner-show-coal',
+  description: 'Whether to show coal as a possible outcome in the spinner',
+  defaultValue: false,
+  decide: async () => {
+    // 50/50 A/B test
+    return Math.random() < 0.5;
+  },
+  options: [
+    { value: true, label: 'Show Coal' },
+    { value: false, label: 'No Coal' },
+  ],
+});

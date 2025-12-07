@@ -13,9 +13,8 @@ const envSchema = z.object({
   // App
   NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
 
-  // Statsig (optional - feature flags/experiments)
-  STATSIG_SERVER_API_KEY: z.string().optional(),
-  STATSIG_CLIENT_API_KEY: z.string().optional(),
+  // Vercel Flags SDK (optional - feature flags/experiments)
+  FLAGS_SECRET: z.string().optional(),
   EDGE_CONFIG: z.string().optional(),
 
   // Resend (optional - email sending)

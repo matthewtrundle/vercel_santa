@@ -7,13 +7,12 @@ import { redirect } from 'next/navigation';
 import { revalidatePath } from 'next/cache';
 import type { Session } from '@/db/schema';
 import {
-  checkFeatureGate,
-  getExperiment,
-  logEvent,
-  FEATURE_GATES,
-  EXPERIMENTS,
-  type StatsigUser,
-} from '@/lib/statsig';
+  betaFeaturesFlag,
+  newReindeerAnimationsFlag,
+  aiModelUpgradeFlag,
+  recommendationAlgorithmFlag,
+  workshopLayoutFlag,
+} from '@/lib/flags';
 
 export async function createSession(): Promise<Session> {
   const [session] = await db
@@ -155,21 +154,8 @@ export async function getSessionNicePoints(sessionId: string): Promise<number | 
 }
 
 /**
- * Helper to create a Statsig user from a session ID.
- * Use this to check feature flags for the current user/session.
- */
-function getStatsigUser(sessionId: string): StatsigUser {
-  return {
-    userID: sessionId,
-    custom: {
-      platform: 'web',
-    },
-  };
-}
-
-/**
  * Get feature flags for a session.
- * Returns an object with all feature flags relevant to the workshop.
+ * Uses Vercel's Flags SDK which automatically integrates with Web Analytics.
  *
  * Example usage:
  * ```ts
@@ -179,17 +165,16 @@ function getStatsigUser(sessionId: string): StatsigUser {
  * }
  * ```
  */
-export async function getSessionFeatureFlags(sessionId: string): Promise<{
+export async function getSessionFeatureFlags(_sessionId: string): Promise<{
   betaFeatures: boolean;
   newReindeerAnimations: boolean;
   aiModelUpgrade: boolean;
 }> {
-  const user = getStatsigUser(sessionId);
-
+  // Vercel Flags SDK - automatically tracked in Web Analytics
   const [betaFeatures, newReindeerAnimations, aiModelUpgrade] = await Promise.all([
-    checkFeatureGate(FEATURE_GATES.BETA_FEATURES, user),
-    checkFeatureGate(FEATURE_GATES.NEW_REINDEER_ANIMATIONS, user),
-    checkFeatureGate(FEATURE_GATES.AI_MODEL_UPGRADE, user),
+    betaFeaturesFlag(),
+    newReindeerAnimationsFlag(),
+    aiModelUpgradeFlag(),
   ]);
 
   return {
@@ -201,46 +186,27 @@ export async function getSessionFeatureFlags(sessionId: string): Promise<{
 
 /**
  * Get experiment values for a session.
- * Use this to get A/B test variants.
+ * Uses Vercel's Flags SDK for A/B testing.
  *
  * Example usage:
  * ```ts
  * const experiments = await getSessionExperiments(sessionId);
- * const algorithm = experiments.recommendationAlgorithm?.variant || 'default';
+ * if (experiments.recommendationAlgorithm === 'collaborative') {
+ *   // Use collaborative filtering
+ * }
  * ```
  */
-export async function getSessionExperiments(sessionId: string): Promise<{
-  recommendationAlgorithm: Record<string, unknown>;
-  workshopLayout: Record<string, unknown>;
+export async function getSessionExperiments(_sessionId: string): Promise<{
+  recommendationAlgorithm: 'default' | 'collaborative' | 'content-based';
+  workshopLayout: 'classic' | 'modern' | 'minimal';
 }> {
-  const user = getStatsigUser(sessionId);
-
   const [recommendationAlgorithm, workshopLayout] = await Promise.all([
-    getExperiment(EXPERIMENTS.RECOMMENDATION_ALGORITHM, user),
-    getExperiment(EXPERIMENTS.WORKSHOP_LAYOUT, user),
+    recommendationAlgorithmFlag(),
+    workshopLayoutFlag(),
   ]);
 
   return {
     recommendationAlgorithm,
     workshopLayout,
   };
-}
-
-/**
- * Track an analytics event in Statsig.
- * Use this to log custom events for experiment analysis.
- *
- * Example usage:
- * ```ts
- * await trackSessionEvent(sessionId, 'gift_selected', '123', { category: 'toys' });
- * ```
- */
-export async function trackSessionEvent(
-  sessionId: string,
-  eventName: string,
-  value?: string | number,
-  metadata?: Record<string, string>
-): Promise<void> {
-  const user = getStatsigUser(sessionId);
-  await logEvent(user, eventName, value, metadata);
 }
