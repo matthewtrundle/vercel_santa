@@ -295,6 +295,7 @@ export function QuestionForm({
               className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent resize-none"
               rows={4}
               maxLength={500}
+              autoFocus
             />
             <p className="text-sm text-gray-400 mt-2">
               {specialNotes.length}/500 characters
