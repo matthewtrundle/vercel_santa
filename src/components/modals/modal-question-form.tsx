@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactElement, FormEvent } from 'react';
-import { useState, useCallback } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import {
   ArrowRight,
@@ -80,6 +80,7 @@ export function ModalQuestionForm({
   const [currentStep, setCurrentStep] = useState<FormStep>('name');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notesStepReady, setNotesStepReady] = useState(false);
 
   // Form state
   const [name, setName] = useState('');
@@ -90,6 +91,18 @@ export function ModalQuestionForm({
 
   const currentStepIndex = steps.indexOf(currentStep);
   const CurrentIcon = stepIcons[currentStep];
+
+  // Prevent accidental immediate submission when entering notes step
+  // This gives the user a moment to see the step before they can submit
+  useEffect(() => {
+    if (currentStep === 'notes') {
+      setNotesStepReady(false);
+      const timer = setTimeout(() => {
+        setNotesStepReady(true);
+      }, 500); // Wait 500ms before allowing submission
+      return () => clearTimeout(timer);
+    }
+  }, [currentStep]);
 
   const canProceed = useCallback(() => {
     switch (currentStep) {
@@ -143,6 +156,12 @@ export function ModalQuestionForm({
         return;
       }
 
+      // Prevent accidental submission right when entering the notes step
+      // (e.g., from a held Enter key or double-click)
+      if (!notesStepReady) {
+        return;
+      }
+
       setIsSubmitting(true);
       setError(null);
 
@@ -169,7 +188,7 @@ export function ModalQuestionForm({
         setIsSubmitting(false);
       }
     },
-    [sessionId, name, age, interests, budget, specialNotes, onComplete, currentStep, canProceed, handleNext]
+    [sessionId, name, age, interests, budget, specialNotes, onComplete, currentStep, canProceed, handleNext, notesStepReady]
   );
 
   return (
