@@ -5,8 +5,8 @@ import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Volume2, VolumeX, Music } from 'lucide-react';
 
-// Royalty-free Christmas music from Pixabay
-const CHRISTMAS_MUSIC_URL = 'https://cdn.pixabay.com/audio/2022/11/22/audio_a89aff4096.mp3';
+// Self-hosted Christmas jingle bells melody
+const CHRISTMAS_MUSIC_URL = '/christmas-music.mp3';
 
 export function MusicPlayer(): ReactElement {
   const [isPlaying, setIsPlaying] = useState(false);
