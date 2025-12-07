@@ -4,11 +4,12 @@ import type { ReactElement } from 'react';
 import { useState, useCallback, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { motion, AnimatePresence } from 'motion/react';
-import { X, Camera, Sparkles, Gift, Loader2 } from 'lucide-react';
+import { X, Camera, Sparkles, Gift, Loader2, Star } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ImageInput } from '@/components/workshop/image-input';
 import { ProcessingView } from '@/components/workshop/processing-view';
-import { createSession } from '@/actions';
+import { NicePointsSpinner } from '@/components/workshop/nice-points-spinner';
+import { createSession, updateSessionNicePoints } from '@/actions';
 import type { AgentStatus, AgentEvent } from '@/types';
 import { ModalQuestionForm } from './modal-question-form';
 import {
@@ -20,7 +21,7 @@ import {
   trackProcessingError,
 } from '@/lib/analytics';
 
-type JourneyStep = 'upload' | 'questions' | 'processing' | 'complete';
+type JourneyStep = 'upload' | 'questions' | 'spinner' | 'processing' | 'complete';
 
 interface GiftJourneyModalProps {
   isOpen: boolean;
@@ -46,6 +47,10 @@ export function GiftJourneyModal({
   const [error, setError] = useState<string | null>(null);
   const [isCreatingSession, setIsCreatingSession] = useState(false);
   const [currentFact, setCurrentFact] = useState(0);
+
+  // Spinner state
+  const [showCoal, setShowCoal] = useState(false);
+  const [nicePoints, setNicePoints] = useState<number | null>(null);
 
   // Processing state
   const [statuses, setStatuses] = useState<Record<string, AgentStatus>>({
@@ -78,6 +83,24 @@ export function GiftJourneyModal({
         });
     }
   }, [isOpen, sessionId, isCreatingSession]);
+
+  // Fetch spinner flag when reaching spinner step
+  useEffect(() => {
+    if (step === 'spinner') {
+      async function fetchFlag() {
+        try {
+          const response = await fetch('/api/flags/spinner-coal');
+          if (response.ok) {
+            const data = await response.json();
+            setShowCoal(data.showCoal ?? false);
+          }
+        } catch {
+          setShowCoal(false);
+        }
+      }
+      fetchFlag();
+    }
+  }, [step]);
 
   // Rotate fun facts during processing
   useEffect(() => {
@@ -118,6 +141,23 @@ export function GiftJourneyModal({
       interestsCount: 0, // Will be enhanced with actual form data
     });
 
+    // Go to spinner step instead of directly to processing
+    setStep('spinner');
+  }, [sessionId, hasUploaded]);
+
+  const handleSpinnerComplete = useCallback(async (points: number) => {
+    if (!sessionId) return;
+
+    setNicePoints(points);
+
+    // Save nice points to session
+    try {
+      await updateSessionNicePoints(sessionId, points);
+    } catch (error) {
+      console.error('Failed to save Nice Points:', error);
+    }
+
+    // Now proceed to processing
     setStep('processing');
     trackProcessingStarted();
     processingStartTime.current = Date.now();
@@ -200,7 +240,7 @@ export function GiftJourneyModal({
       console.error('Processing error:', err);
       setError(err instanceof Error ? err.message : 'Processing failed');
     }
-  }, [sessionId, hasUploaded]);
+  }, [sessionId]);
 
   const handleViewResults = useCallback(() => {
     if (sessionId) {
@@ -215,6 +255,8 @@ export function GiftJourneyModal({
     setSessionId(null);
     setHasUploaded(false);
     setError(null);
+    setShowCoal(false);
+    setNicePoints(null);
     setStatuses({
       image: 'pending',
       profile: 'pending',
@@ -242,7 +284,7 @@ export function GiftJourneyModal({
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          onClick={step !== 'processing' ? handleClose : undefined}
+          onClick={step !== 'processing' && step !== 'spinner' ? handleClose : undefined}
         />
 
         {/* Modal */}
@@ -254,7 +296,7 @@ export function GiftJourneyModal({
           transition={{ type: 'spring', damping: 25 }}
         >
           {/* Close button */}
-          {step !== 'processing' && (
+          {step !== 'processing' && step !== 'spinner' && (
             <button
               onClick={handleClose}
               className="absolute top-4 right-4 p-2 rounded-full bg-gray-100 hover:bg-gray-200 transition-colors z-10"
@@ -347,6 +389,41 @@ export function GiftJourneyModal({
                   sessionId={sessionId}
                   onComplete={handleQuestionsComplete}
                   onBack={() => setStep('upload')}
+                />
+              </motion.div>
+            )}
+
+            {/* Spinner Step */}
+            {step === 'spinner' && (
+              <motion.div
+                key="spinner"
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.9 }}
+                transition={{ duration: 0.3 }}
+                className="py-4"
+              >
+                <div className="text-center mb-6">
+                  <motion.div
+                    className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-gradient-to-br from-amber-100 to-yellow-100 mb-3"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring' }}
+                  >
+                    <Star className="w-8 h-8 text-amber-600" />
+                  </motion.div>
+                  <h2 className="text-xl font-bold text-gray-900 mb-1">
+                    The Naughty or Nice Reveal!
+                  </h2>
+                  <p className="text-sm text-gray-600 max-w-md mx-auto">
+                    Spin the wheel to discover how many Nice Points you&apos;ve earned.
+                    These points unlock special gift recommendations!
+                  </p>
+                </div>
+
+                <NicePointsSpinner
+                  showCoal={showCoal}
+                  onSpinComplete={handleSpinnerComplete}
                 />
               </motion.div>
             )}
@@ -449,10 +526,22 @@ export function GiftJourneyModal({
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
-                  className="text-gray-600 mb-8"
+                  className="text-gray-600 mb-4"
                 >
                   Your personalized gift recommendations are ready!
                 </motion.p>
+
+                {nicePoints && (
+                  <motion.div
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.45 }}
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-amber-100 to-yellow-100 rounded-full mb-6"
+                  >
+                    <Star className="w-5 h-5 text-amber-600" />
+                    <span className="font-bold text-amber-700">{nicePoints} Nice Points earned!</span>
+                  </motion.div>
+                )}
 
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
