@@ -110,6 +110,15 @@ export function WorkshopIntro({ onStartJourney }: WorkshopIntroProps): ReactElem
             xmlns="http://www.w3.org/2000/svg"
             className="w-full h-auto"
           >
+            {/* SVG Definitions */}
+            <defs>
+              <radialGradient id="doorGlow" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFD700" stopOpacity="0.6" />
+                <stop offset="50%" stopColor="#FFA500" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#FF6B00" stopOpacity="0" />
+              </radialGradient>
+            </defs>
+
             {/* Sky/background */}
             <rect width="600" height="400" fill="transparent" />
 
@@ -218,6 +227,25 @@ export function WorkshopIntro({ onStartJourney }: WorkshopIntroProps): ReactElem
                 whileTap={onStartJourney ? { scale: 0.98 } : {}}
                 className="door-group"
               >
+                {/* Glowing aura around door to indicate clickability */}
+                {onStartJourney && (
+                  <motion.ellipse
+                    cx="300"
+                    cy="310"
+                    rx="45"
+                    ry="65"
+                    fill="url(#doorGlow)"
+                    animate={{
+                      opacity: [0.4, 0.8, 0.4],
+                      scale: [1, 1.1, 1],
+                    }}
+                    transition={{
+                      duration: 2,
+                      repeat: Infinity,
+                      ease: 'easeInOut',
+                    }}
+                  />
+                )}
                 {/* Door frame */}
                 <path
                   d="M275 360 L275 280 Q300 255 325 280 L325 360 Z"
@@ -236,8 +264,8 @@ export function WorkshopIntro({ onStartJourney }: WorkshopIntroProps): ReactElem
                   r="5"
                   fill="#FFD700"
                   whileHover={onStartJourney ? { r: 6, fill: '#FFF8DC' } : {}}
-                  animate={onStartJourney ? { scale: [1, 1.1, 1] } : {}}
-                  transition={{ duration: 1.5, repeat: Infinity }}
+                  animate={onStartJourney ? { scale: [1, 1.2, 1] } : {}}
+                  transition={{ duration: 1, repeat: Infinity }}
                 />
                 {/* Door wreath - organic */}
                 <circle cx="300" cy="295" r="14" fill="none" stroke="#228B22" strokeWidth="7" />
