@@ -128,16 +128,16 @@ export function QuestionForm({
           throw new Error(result.error);
         }
 
-        router.push(`/workshop/${sessionId}/spinner`);
+        // Use window.location for reliable navigation (bypasses React routing issues)
+        window.location.href = `/workshop/${sessionId}/spinner`;
       } catch (err) {
         setError(
           err instanceof Error ? err.message : 'Failed to save. Please try again.'
         );
-      } finally {
         setIsSubmitting(false);
       }
     },
-    [sessionId, name, age, interests, budget, specialNotes, router]
+    [sessionId, name, age, interests, budget, specialNotes]
   );
 
   return (
