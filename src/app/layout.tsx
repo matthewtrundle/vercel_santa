@@ -4,6 +4,7 @@ import { Quicksand, Mountains_of_Christmas } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { VercelToolbar } from '@vercel/toolbar/next';
+import { MusicPlayer } from '@/components/ui/music-player';
 import './globals.css';
 
 // Soft, rounded body font - friendly and approachable
@@ -66,6 +67,7 @@ export default function RootLayout({ children }: RootLayoutProps): ReactElement 
         className={`${quicksand.variable} ${mountainsOfChristmas.variable} antialiased min-h-screen`}
       >
         {children}
+        <MusicPlayer />
         <Analytics />
         <SpeedInsights />
         {process.env.NODE_ENV === 'development' && <VercelToolbar />}
