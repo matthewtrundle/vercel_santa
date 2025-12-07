@@ -113,10 +113,19 @@ export function WorkshopIntro({ onStartJourney }: WorkshopIntroProps): ReactElem
             {/* SVG Definitions */}
             <defs>
               <radialGradient id="doorGlow" cx="50%" cy="50%" r="50%">
-                <stop offset="0%" stopColor="#FFD700" stopOpacity="0.6" />
-                <stop offset="50%" stopColor="#FFA500" stopOpacity="0.3" />
+                <stop offset="0%" stopColor="#FFD700" stopOpacity="0.8" />
+                <stop offset="40%" stopColor="#FFA500" stopOpacity="0.5" />
                 <stop offset="100%" stopColor="#FF6B00" stopOpacity="0" />
               </radialGradient>
+              <radialGradient id="doorGlowOuter" cx="50%" cy="50%" r="50%">
+                <stop offset="0%" stopColor="#FFFFFF" stopOpacity="0.4" />
+                <stop offset="30%" stopColor="#FFD700" stopOpacity="0.3" />
+                <stop offset="100%" stopColor="#FF6B00" stopOpacity="0" />
+              </radialGradient>
+              <linearGradient id="lightRay" x1="0%" y1="0%" x2="100%" y2="0%">
+                <stop offset="0%" stopColor="#FFD700" stopOpacity="0.8" />
+                <stop offset="100%" stopColor="#FFD700" stopOpacity="0" />
+              </linearGradient>
             </defs>
 
             {/* Sky/background */}
@@ -227,36 +236,118 @@ export function WorkshopIntro({ onStartJourney }: WorkshopIntroProps): ReactElem
                 whileTap={onStartJourney ? { scale: 0.98 } : {}}
                 className="door-group"
               >
-                {/* Glowing aura around door to indicate clickability */}
+                {/* DRAMATIC LIGHT RAYS emanating from door */}
                 {onStartJourney && (
-                  <motion.ellipse
-                    cx="300"
-                    cy="310"
-                    rx="45"
-                    ry="65"
-                    fill="url(#doorGlow)"
-                    animate={{
-                      opacity: [0.4, 0.8, 0.4],
-                      scale: [1, 1.1, 1],
-                    }}
-                    transition={{
-                      duration: 2,
-                      repeat: Infinity,
-                      ease: 'easeInOut',
-                    }}
-                  />
+                  <>
+                    {/* Outer glow layer */}
+                    <motion.ellipse
+                      cx="300"
+                      cy="310"
+                      rx="80"
+                      ry="100"
+                      fill="url(#doorGlowOuter)"
+                      animate={{
+                        opacity: [0.3, 0.6, 0.3],
+                        scale: [1, 1.15, 1],
+                      }}
+                      transition={{
+                        duration: 3,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                    />
+                    {/* Light rays */}
+                    {[...Array(8)].map((_, i) => {
+                      const angle = (i * 45 - 90) * (Math.PI / 180);
+                      const x1 = 300;
+                      const y1 = 310;
+                      const length = 70 + (i % 2) * 20;
+                      const x2 = x1 + Math.cos(angle) * length;
+                      const y2 = y1 + Math.sin(angle) * length;
+                      return (
+                        <motion.line
+                          key={i}
+                          x1={x1}
+                          y1={y1}
+                          x2={x2}
+                          y2={y2}
+                          stroke="#FFD700"
+                          strokeWidth="3"
+                          strokeLinecap="round"
+                          opacity={0.6}
+                          animate={{
+                            opacity: [0.3, 0.7, 0.3],
+                            strokeWidth: [2, 4, 2],
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            delay: i * 0.15,
+                            ease: 'easeInOut',
+                          }}
+                        />
+                      );
+                    })}
+                    {/* Inner bright glow */}
+                    <motion.ellipse
+                      cx="300"
+                      cy="310"
+                      rx="50"
+                      ry="70"
+                      fill="url(#doorGlow)"
+                      animate={{
+                        opacity: [0.5, 1, 0.5],
+                        scale: [1, 1.1, 1],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        ease: 'easeInOut',
+                      }}
+                    />
+                  </>
                 )}
                 {/* Door frame */}
                 <path
                   d="M275 360 L275 280 Q300 255 325 280 L325 360 Z"
                   fill="#5D3A1A"
                 />
-                {/* Door panel */}
+                {/* Door panel with warm glow effect */}
                 <motion.path
                   d="M280 355 L280 285 Q300 265 320 285 L320 355 Z"
                   fill="#8B4513"
                   whileHover={onStartJourney ? { fill: '#A0522D' } : {}}
                 />
+                {/* Warm light seeping through door cracks */}
+                {onStartJourney && (
+                  <>
+                    <motion.rect
+                      x="279"
+                      y="290"
+                      width="2"
+                      height="60"
+                      fill="#FFD700"
+                      animate={{ opacity: [0.4, 0.8, 0.4] }}
+                      transition={{ duration: 1.5, repeat: Infinity }}
+                    />
+                    <motion.rect
+                      x="319"
+                      y="290"
+                      width="2"
+                      height="60"
+                      fill="#FFD700"
+                      animate={{ opacity: [0.4, 0.8, 0.4] }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: 0.3 }}
+                    />
+                    <motion.path
+                      d="M280 356 L320 356"
+                      stroke="#FFD700"
+                      strokeWidth="2"
+                      animate={{ opacity: [0.3, 0.7, 0.3] }}
+                      transition={{ duration: 1.5, repeat: Infinity, delay: 0.6 }}
+                    />
+                  </>
+                )}
                 {/* Door handle - golden glow on hover */}
                 <motion.circle
                   cx="312"
@@ -264,7 +355,7 @@ export function WorkshopIntro({ onStartJourney }: WorkshopIntroProps): ReactElem
                   r="5"
                   fill="#FFD700"
                   whileHover={onStartJourney ? { r: 6, fill: '#FFF8DC' } : {}}
-                  animate={onStartJourney ? { scale: [1, 1.2, 1] } : {}}
+                  animate={onStartJourney ? { scale: [1, 1.3, 1] } : {}}
                   transition={{ duration: 1, repeat: Infinity }}
                 />
                 {/* Door wreath - organic */}
@@ -272,12 +363,26 @@ export function WorkshopIntro({ onStartJourney }: WorkshopIntroProps): ReactElem
                 <circle cx="300" cy="283" r="4" fill="#C41E3A" />
                 <circle cx="295" cy="287" r="3" fill="#C41E3A" />
                 <circle cx="305" cy="287" r="3" fill="#C41E3A" />
+
+                {/* "Click to Enter" prompt */}
+                {onStartJourney && (
+                  <motion.g
+                    animate={{ opacity: [0.7, 1, 0.7], y: [0, -3, 0] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  >
+                    <rect x="260" y="365" width="80" height="20" rx="10" fill="#C41E3A" />
+                    <text x="300" y="379" textAnchor="middle" fill="white" fontSize="10" fontWeight="bold">
+                      Click to Enter!
+                    </text>
+                  </motion.g>
+                )}
+
                 {/* Invisible hit area for easier clicking */}
                 <rect
-                  x="270"
+                  x="260"
                   y="250"
-                  width="60"
-                  height="115"
+                  width="80"
+                  height="140"
                   fill="transparent"
                 />
               </motion.g>
