@@ -112,7 +112,7 @@ export function HeroSection({ onStartJourney }: HeroSectionProps): ReactElement 
                   <Sparkles className="w-5 h-5" />
                 </motion.span>
                 <span className="text-white/90 text-sm font-medium">
-                  Powered by AI Magic
+                  Powered by Vercel AI Gateway
                 </span>
               </motion.div>
 

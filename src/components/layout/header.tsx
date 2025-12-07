@@ -65,26 +65,26 @@ export function Header({ sessionId }: HeaderProps): ReactElement {
             <Link
               href="/"
               className={cn(
-                'flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all',
+                'flex items-center gap-1.5 px-4 py-2.5 rounded-full text-base font-bold font-display transition-all',
                 isActive('/')
                   ? 'bg-white/25 text-white shadow-inner'
-                  : 'text-white/80 hover:bg-white/15 hover:text-white'
+                  : 'text-white/90 hover:bg-white/15 hover:text-white'
               )}
             >
-              <TreePine className="w-4 h-4" />
+              <TreePine className="w-5 h-5" />
               <span className="hidden sm:inline">Home</span>
             </Link>
 
             <Link
               href="/how-it-works"
               className={cn(
-                'flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all',
+                'flex items-center gap-1.5 px-4 py-2.5 rounded-full text-base font-bold font-display transition-all',
                 isActive('/how-it-works')
                   ? 'bg-white/25 text-white shadow-inner'
-                  : 'text-white/80 hover:bg-white/15 hover:text-white'
+                  : 'text-white/90 hover:bg-white/15 hover:text-white'
               )}
             >
-              <Snowflake className="w-4 h-4" />
+              <Snowflake className="w-5 h-5" />
               <span className="hidden sm:inline">How It Works</span>
             </Link>
 
@@ -93,13 +93,13 @@ export function Header({ sessionId }: HeaderProps): ReactElement {
               <Link
                 href={`/workshop/${sessionId}/results`}
                 className={cn(
-                  'flex items-center gap-1.5 px-3 py-2 rounded-full text-sm font-medium transition-all',
+                  'flex items-center gap-1.5 px-4 py-2.5 rounded-full text-base font-bold font-display transition-all',
                   pathname.includes('/results')
                     ? 'bg-white/25 text-white shadow-inner'
-                    : 'text-white/80 hover:bg-white/15 hover:text-white'
+                    : 'text-white/90 hover:bg-white/15 hover:text-white'
                 )}
               >
-                <Scroll className="w-4 h-4" />
+                <Scroll className="w-5 h-5" />
                 <span className="hidden sm:inline">My List</span>
               </Link>
             )}
@@ -112,9 +112,9 @@ export function Header({ sessionId }: HeaderProps): ReactElement {
               >
                 <Link
                   href="/workshop/start"
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-full text-sm font-bold bg-gradient-to-r from-amber-400 to-yellow-500 text-red-900 hover:from-amber-300 hover:to-yellow-400 transition-all ml-2 shadow-lg shadow-amber-900/30 border border-amber-300/50"
+                  className="flex items-center gap-1.5 px-5 py-2.5 rounded-full text-base font-bold font-display bg-gradient-to-r from-amber-400 to-yellow-500 text-red-900 hover:from-amber-300 hover:to-yellow-400 transition-all ml-2 shadow-lg shadow-amber-900/30 border border-amber-300/50"
                 >
-                  <Sparkles className="w-4 h-4" />
+                  <Sparkles className="w-5 h-5" />
                   <span className="hidden sm:inline">Find Gifts</span>
                 </Link>
               </motion.div>

@@ -74,16 +74,21 @@ function ElfCard({ elf, status, detail, nextElf, isLast }: ElfCardProps): ReactE
     <div className="relative">
       <motion.div
         className={cn(
-          'relative p-4 rounded-xl border-2 transition-all',
+          'relative p-4 rounded-xl border-2 transition-all cursor-pointer',
           isRunning && 'border-yellow-400 bg-yellow-50 shadow-lg shadow-yellow-200/50',
           isCompleted && 'border-green-400 bg-green-50',
           isPending && 'border-gray-200 bg-gray-50 opacity-50'
         )}
         animate={isRunning ? { scale: [1, 1.02, 1] } : {}}
         transition={{ duration: 1.5, repeat: isRunning ? Infinity : 0 }}
+        whileHover={{
+          scale: 1.02,
+          boxShadow: '0 8px 25px rgba(0,0,0,0.15)',
+          transition: { duration: 0.2 }
+        }}
       >
         <div className="flex items-center gap-3">
-          {/* Elf avatar */}
+          {/* Elf avatar - wiggles on hover! */}
           <motion.div
             className={cn(
               'w-12 h-12 rounded-full flex items-center justify-center text-2xl',
@@ -91,6 +96,11 @@ function ElfCard({ elf, status, detail, nextElf, isLast }: ElfCardProps): ReactE
             )}
             animate={isRunning ? { rotate: [0, 10, -10, 0] } : {}}
             transition={{ duration: 0.5, repeat: isRunning ? Infinity : 0 }}
+            whileHover={{
+              rotate: [0, -15, 15, -10, 10, 0],
+              scale: [1, 1.1, 1],
+              transition: { duration: 0.5 }
+            }}
           >
             {isCompleted ? (
               <Check className="w-6 h-6 text-white" />
