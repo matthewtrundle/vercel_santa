@@ -19,6 +19,7 @@ interface ElfData {
   emoji: string;
   color: string;
   description: string;
+  model: string;
 }
 
 const ELVES: ElfData[] = [
@@ -28,6 +29,7 @@ const ELVES: ElfData[] = [
     emoji: '🔍',
     color: 'from-blue-400 to-blue-600',
     description: 'Analyzing your image...',
+    model: 'GPT-5 mini',
   },
   {
     id: 'profile',
@@ -35,6 +37,7 @@ const ELVES: ElfData[] = [
     emoji: '📋',
     color: 'from-purple-400 to-purple-600',
     description: 'Building the perfect profile...',
+    model: 'Grok 4.1 Fast',
   },
   {
     id: 'gift-match',
@@ -42,6 +45,7 @@ const ELVES: ElfData[] = [
     emoji: '🎁',
     color: 'from-red-400 to-red-600',
     description: 'Finding amazing matches...',
+    model: 'Grok 4.1 Fast',
   },
   {
     id: 'narration',
@@ -49,6 +53,7 @@ const ELVES: ElfData[] = [
     emoji: '✉️',
     color: 'from-green-400 to-green-600',
     description: "Writing Santa's note...",
+    model: 'Grok 4.1 Fast',
   },
 ];
 
@@ -97,6 +102,9 @@ function ElfCard({ elf, status, detail, nextElf, isLast }: ElfCardProps): ReactE
           <div className="flex-1 min-w-0">
             <div className="flex items-center gap-2">
               <h4 className="font-semibold text-gray-900">{elf.name}</h4>
+              <span className="text-[10px] px-1.5 py-0.5 bg-gray-100 text-gray-500 rounded font-mono">
+                {elf.model}
+              </span>
               {isRunning && (
                 <motion.div
                   className="flex gap-1"

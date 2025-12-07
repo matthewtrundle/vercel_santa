@@ -121,7 +121,7 @@ export async function runAgentPipeline(
 
     if (session.photoUrl) {
       try {
-        await emit({ type: 'detail', agentId: 'image', detail: 'Running GPT-4 Vision analysis on photo...' });
+        await emit({ type: 'detail', agentId: 'image', detail: 'Running GPT-5 mini vision analysis...' });
         imageOutput = await runImageElf({
           imageUrl: session.photoUrl,
           sessionId,
@@ -169,7 +169,7 @@ export async function runAgentPipeline(
 
     const profileStartTime = Date.now();
 
-    await emit({ type: 'detail', agentId: 'profile', detail: 'AI analyzing personality traits and interests...' });
+    await emit({ type: 'detail', agentId: 'profile', detail: 'Grok 4.1 analyzing personality traits...' });
     const profileOutput = await runProfileElf({
       formData,
       imageAnalysis: imageOutput,
@@ -218,7 +218,7 @@ export async function runAgentPipeline(
 
     const giftMatchStartTime = Date.now();
 
-    await emit({ type: 'detail', agentId: 'gift-match', detail: 'AI scoring and ranking potential matches...' });
+    await emit({ type: 'detail', agentId: 'gift-match', detail: 'Grok 4.1 scoring and ranking matches...' });
     const giftMatchOutput = await runGiftMatchElf({
       profile: profileOutput.profile,
       sessionId,

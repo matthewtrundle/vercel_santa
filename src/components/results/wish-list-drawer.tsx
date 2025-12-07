@@ -12,6 +12,7 @@ import {
   Loader2,
   Gift,
   Sparkles,
+  AlertTriangle,
 } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
@@ -37,13 +38,22 @@ interface WishListDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   sessionId: string;
+  budgetTier: 'budget' | 'moderate' | 'premium';
   onItemRemoved?: () => void;
 }
+
+// Nice Points limits based on budget tier
+const NICE_POINTS_LIMITS: Record<'budget' | 'moderate' | 'premium', number> = {
+  budget: 25,
+  moderate: 75,
+  premium: 200,
+};
 
 export function WishListDrawer({
   isOpen,
   onClose,
   sessionId,
+  budgetTier,
   onItemRemoved,
 }: WishListDrawerProps): ReactElement {
   const [items, setItems] = useState<WishListItem[]>([]);
@@ -105,10 +115,13 @@ export function WishListDrawer({
     });
   };
 
-  const totalPrice = items.reduce(
-    (sum, item) => sum + Number(item.gift.price),
+  const totalNicePoints = items.reduce(
+    (sum, item) => sum + Math.round(Number(item.gift.price)),
     0
   );
+
+  const nicePointsLimit = NICE_POINTS_LIMITS[budgetTier];
+  const isOverBudget = totalNicePoints > nicePointsLimit;
 
   return (
     <AnimatePresence>
@@ -215,8 +228,9 @@ export function WishListDrawer({
                             >
                               {item.gift.name}
                             </h3>
-                            <span className="text-sm font-bold text-green-600 whitespace-nowrap">
-                              ${Number(item.gift.price).toFixed(2)}
+                            <span className="text-sm font-bold text-amber-600 whitespace-nowrap flex items-center gap-1">
+                              <span className="text-amber-500">&#9733;</span>
+                              {Math.round(Number(item.gift.price))}
                             </span>
                           </div>
                           <p className="text-sm text-gray-500 line-clamp-2 mb-2">
@@ -263,19 +277,50 @@ export function WishListDrawer({
             {/* Footer */}
             {items.length > 0 && (
               <div className="border-t p-4 bg-gradient-to-r from-red-50 to-green-50">
-                <div className="flex items-center justify-between mb-4">
-                  <span className="text-gray-600">Estimated Total:</span>
-                  <span className="text-xl font-bold text-green-600">
-                    ${totalPrice.toFixed(2)}
+                <div className="flex items-center justify-between mb-2">
+                  <span className="text-gray-600">Total Nice Points:</span>
+                  <span className={`text-xl font-bold flex items-center gap-1 ${isOverBudget ? 'text-red-600' : 'text-amber-600'}`}>
+                    <span className={isOverBudget ? 'text-red-500' : 'text-amber-500'}>&#9733;</span>
+                    {totalNicePoints}
                   </span>
                 </div>
-                <Link href={`/workshop/${sessionId}/checkout`} onClick={onClose}>
+                <div className="flex items-center justify-between mb-4 text-sm">
+                  <span className="text-gray-500">Your Budget:</span>
+                  <span className="text-gray-600 flex items-center gap-1">
+                    <span className="text-amber-500">&#9733;</span>
+                    {nicePointsLimit} Nice Points
+                  </span>
+                </div>
+
+                {/* Over budget warning */}
+                {isOverBudget && (
+                  <motion.div
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg flex items-start gap-2"
+                  >
+                    <AlertTriangle className="w-5 h-5 text-red-500 flex-shrink-0 mt-0.5" />
+                    <div>
+                      <p className="text-sm font-medium text-red-700">Too many Nice Points!</p>
+                      <p className="text-xs text-red-600">
+                        You&apos;re {totalNicePoints - nicePointsLimit} Nice Points over your budget. Remove some gifts to proceed.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+
+                <Link href={`/workshop/${sessionId}/checkout`} onClick={isOverBudget ? (e) => e.preventDefault() : onClose}>
                   <Button
-                    className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg"
+                    className={`w-full shadow-lg ${
+                      isOverBudget
+                        ? 'bg-gray-400 hover:bg-gray-400 cursor-not-allowed'
+                        : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800'
+                    }`}
                     size="lg"
+                    disabled={isOverBudget}
                   >
                     <Sparkles className="w-5 h-5 mr-2" />
-                    🛷 Send to Santa&apos;s Sleigh
+                    {isOverBudget ? '❄️ Over Budget' : '🛷 Send to Santa\'s Sleigh'}
                   </Button>
                 </Link>
                 <Button

@@ -93,7 +93,7 @@ export default async function ResultsPage({
   const hasRealData = recs.length > 0;
 
   return (
-    <ResultsPageClient sessionId={sessionId} initialListCount={listItemGiftIds.length} giftCount={recs.length}>
+    <ResultsPageClient sessionId={sessionId} initialListCount={listItemGiftIds.length} giftCount={recs.length} budgetTier={profile?.budgetTier ?? 'moderate'}>
     <div className="max-w-4xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="text-center mb-10">
