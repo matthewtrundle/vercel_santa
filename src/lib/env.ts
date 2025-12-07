@@ -1,8 +1,8 @@
 import { z } from 'zod';
 
 const envSchema = z.object({
-  // AI
-  OPENAI_API_KEY: z.string().min(1, 'OPENAI_API_KEY is required'),
+  // AI - Vercel AI Gateway (get from Vercel Dashboard > AI Gateway)
+  AI_GATEWAY_API_KEY: z.string().min(1, 'AI_GATEWAY_API_KEY is required'),
 
   // Database
   POSTGRES_URL: z.string().min(1, 'POSTGRES_URL is required'),
@@ -12,6 +12,11 @@ const envSchema = z.object({
 
   // App
   NEXT_PUBLIC_APP_URL: z.string().url().default('http://localhost:3000'),
+
+  // Statsig (optional - feature flags/experiments)
+  STATSIG_SERVER_API_KEY: z.string().optional(),
+  STATSIG_CLIENT_API_KEY: z.string().optional(),
+  EDGE_CONFIG: z.string().optional(),
 
   // Node environment
   NODE_ENV: z

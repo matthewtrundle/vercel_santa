@@ -92,10 +92,16 @@ export async function createOrUpdateProfile(
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to save profile:', error);
+    console.error('[Profile Save Error]:', error);
+    console.error('[Profile Save Error] Stack:', error instanceof Error ? error.stack : 'No stack');
+    console.error('[Profile Save Error] Session ID:', sessionId);
+    console.error('[Profile Save Error] Form Data:', JSON.stringify({ name, age, interests, budget, specialNotes: specialNotes?.substring(0, 50) }));
+
+    // Return more specific error message for debugging
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
     return {
       success: false,
-      error: 'Failed to save profile. Please try again.',
+      error: `Failed to save profile: ${errorMessage}`,
     };
   }
 }
