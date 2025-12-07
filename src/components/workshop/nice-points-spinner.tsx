@@ -15,26 +15,26 @@ interface NicePointsSpinnerProps {
 
 // Nice-only segments (no coal variant)
 const NICE_SEGMENTS = [
-  { points: 50, label: '50', color: 'from-green-400 to-green-500', emoji: '🌟' },
-  { points: 75, label: '75', color: 'from-blue-400 to-blue-500', emoji: '✨' },
-  { points: 100, label: '100', color: 'from-purple-400 to-purple-500', emoji: '🎄' },
-  { points: 125, label: '125', color: 'from-pink-400 to-pink-500', emoji: '🎁' },
-  { points: 150, label: '150', color: 'from-red-400 to-red-500', emoji: '❄️' },
-  { points: 175, label: '175', color: 'from-amber-400 to-amber-500', emoji: '🔔' },
-  { points: 200, label: '200', color: 'from-emerald-400 to-emerald-500', emoji: '⭐' },
-  { points: 250, label: '250', color: 'from-yellow-400 to-yellow-500', emoji: '🎅' },
+  { points: 200, label: '200', color: 'from-green-400 to-green-500', emoji: '🌟' },
+  { points: 300, label: '300', color: 'from-blue-400 to-blue-500', emoji: '✨' },
+  { points: 400, label: '400', color: 'from-purple-400 to-purple-500', emoji: '🎄' },
+  { points: 500, label: '500', color: 'from-pink-400 to-pink-500', emoji: '🎁' },
+  { points: 600, label: '600', color: 'from-red-400 to-red-500', emoji: '❄️' },
+  { points: 750, label: '750', color: 'from-amber-400 to-amber-500', emoji: '🔔' },
+  { points: 900, label: '900', color: 'from-emerald-400 to-emerald-500', emoji: '⭐' },
+  { points: 1000, label: '1000', color: 'from-yellow-400 to-yellow-500', emoji: '🎅' },
 ];
 
 // Coal variant segments (includes coal as "naughty" outcome)
 const COAL_SEGMENTS = [
-  { points: 25, label: '25', color: 'from-gray-600 to-gray-700', emoji: '🪨' },
-  { points: 50, label: '50', color: 'from-green-400 to-green-500', emoji: '🌟' },
-  { points: 75, label: '75', color: 'from-blue-400 to-blue-500', emoji: '✨' },
-  { points: 100, label: '100', color: 'from-purple-400 to-purple-500', emoji: '🎄' },
-  { points: 125, label: '125', color: 'from-pink-400 to-pink-500', emoji: '🎁' },
-  { points: 150, label: '150', color: 'from-red-400 to-red-500', emoji: '❄️' },
-  { points: 200, label: '200', color: 'from-emerald-400 to-emerald-500', emoji: '⭐' },
-  { points: 250, label: '250', color: 'from-yellow-400 to-yellow-500', emoji: '🎅' },
+  { points: 100, label: '100', color: 'from-gray-600 to-gray-700', emoji: '🪨' },
+  { points: 200, label: '200', color: 'from-green-400 to-green-500', emoji: '🌟' },
+  { points: 300, label: '300', color: 'from-blue-400 to-blue-500', emoji: '✨' },
+  { points: 400, label: '400', color: 'from-purple-400 to-purple-500', emoji: '🎄' },
+  { points: 500, label: '500', color: 'from-pink-400 to-pink-500', emoji: '🎁' },
+  { points: 600, label: '600', color: 'from-red-400 to-red-500', emoji: '❄️' },
+  { points: 750, label: '750', color: 'from-emerald-400 to-emerald-500', emoji: '⭐' },
+  { points: 1000, label: '1000', color: 'from-yellow-400 to-yellow-500', emoji: '🎅' },
 ];
 
 export function NicePointsSpinner({
@@ -230,13 +230,13 @@ export function NicePointsSpinner({
                 Nice Points!
               </p>
               <p className="text-gray-600">
-                {result.points >= 150
-                  ? "You've been very nice this year!"
-                  : result.points >= 100
-                  ? "Santa is pleased with you!"
-                  : result.points >= 50
-                  ? "There's still time to be nicer!"
-                  : "Uh oh... better start being nice!"}
+                {result.points >= 750
+                  ? "You've been EXTRA nice this year!"
+                  : result.points >= 500
+                  ? "Santa is very pleased with you!"
+                  : result.points >= 300
+                  ? "You've been good this year!"
+                  : "There's still time to be nicer!"}
               </p>
             </motion.div>
           </motion.div>
