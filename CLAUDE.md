@@ -120,6 +120,9 @@ Required in `.env.local`:
 - `BLOB_READ_WRITE_TOKEN` - Vercel Blob token
 - `NEXT_PUBLIC_APP_URL` - Application URL
 
+Optional:
+- `RESEND_API_KEY` - Resend API key for sending wish list emails
+
 ## Testing
 
 Tests are located alongside code or in `/tests` directory:

@@ -18,6 +18,9 @@ const envSchema = z.object({
   STATSIG_CLIENT_API_KEY: z.string().optional(),
   EDGE_CONFIG: z.string().optional(),
 
+  // Resend (optional - email sending)
+  RESEND_API_KEY: z.string().optional(),
+
   // Node environment
   NODE_ENV: z
     .enum(['development', 'production', 'test'])

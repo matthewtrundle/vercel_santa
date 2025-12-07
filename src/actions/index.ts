@@ -29,3 +29,5 @@ export {
   getInventoryStats,
   type GiftFormData,
 } from './inventory';
+
+export { sendWishListEmail } from './email';

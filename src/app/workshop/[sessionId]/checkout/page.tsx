@@ -1,7 +1,7 @@
 'use client';
 
 import type { ReactElement } from 'react';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect, useCallback, useTransition } from 'react';
 import { useParams } from 'next/navigation';
 import { motion } from 'motion/react';
 import Link from 'next/link';
@@ -13,12 +13,13 @@ import {
   ExternalLink,
   Loader2,
   Mail,
-  Share2,
   PartyPopper,
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { getSantaListItems } from '@/actions/santa-list';
+import { ShareButton } from '@/components/results/share-button';
+import { getSantaListItems, shareSantaList } from '@/actions/santa-list';
+import { sendWishListEmail } from '@/actions/email';
 
 interface WishListItem {
   id: string;
@@ -44,6 +45,8 @@ export default function CheckoutPage(): ReactElement {
   const [isLoading, setIsLoading] = useState(true);
   const [isConfirmed, setIsConfirmed] = useState(false);
   const [email, setEmail] = useState('');
+  const [isPending, startTransition] = useTransition();
+  const [emailStatus, setEmailStatus] = useState<'idle' | 'sent' | 'error'>('idle');
 
   const fetchItems = useCallback(async () => {
     try {
@@ -64,7 +67,18 @@ export default function CheckoutPage(): ReactElement {
   );
 
   const handleConfirmOrder = () => {
-    setIsConfirmed(true);
+    startTransition(async () => {
+      // Generate share link for the email
+      await shareSantaList(sessionId);
+
+      // Send email if provided
+      if (email.trim()) {
+        const result = await sendWishListEmail({ sessionId, email: email.trim() });
+        setEmailStatus(result.success ? 'sent' : 'error');
+      }
+
+      setIsConfirmed(true);
+    });
   };
 
   if (isLoading) {
@@ -142,6 +156,18 @@ export default function CheckoutPage(): ReactElement {
               <br />
               <span className="font-medium">— Santa Claus</span>
             </p>
+
+            {emailStatus === 'sent' && (
+              <div className="mt-4 p-3 bg-green-50 border border-green-200 rounded-lg flex items-center gap-2">
+                <Check className="w-5 h-5 text-green-600" />
+                <p className="text-sm text-green-700">Wish list sent to your email!</p>
+              </div>
+            )}
+            {emailStatus === 'error' && (
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-lg">
+                <p className="text-sm text-amber-700">Couldn&apos;t send email, but your list is saved!</p>
+              </div>
+            )}
           </motion.div>
 
           <motion.div
@@ -150,11 +176,8 @@ export default function CheckoutPage(): ReactElement {
             transition={{ delay: 0.6 }}
             className="space-y-4"
           >
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Button size="lg" className="gap-2">
-                <Share2 className="w-5 h-5" />
-                Share Wish List
-              </Button>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <ShareButton sessionId={sessionId} />
               <Link href={`/workshop/${sessionId}/results`}>
                 <Button size="lg" variant="outline" className="gap-2 w-full sm:w-auto">
                   <Gift className="w-5 h-5" />
@@ -351,12 +374,21 @@ export default function CheckoutPage(): ReactElement {
 
                   <Button
                     onClick={handleConfirmOrder}
-                    disabled={items.length === 0}
+                    disabled={items.length === 0 || isPending}
                     className="w-full bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg"
                     size="lg"
                   >
-                    <Check className="w-5 h-5 mr-2" />
-                    Confirm & Send to Santa
+                    {isPending ? (
+                      <>
+                        <Loader2 className="w-5 h-5 mr-2 animate-spin" />
+                        Sending to Santa...
+                      </>
+                    ) : (
+                      <>
+                        <Check className="w-5 h-5 mr-2" />
+                        Confirm & Send to Santa
+                      </>
+                    )}
                   </Button>
 
                   <p className="text-xs text-gray-500 text-center mt-4">

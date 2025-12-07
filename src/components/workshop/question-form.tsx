@@ -1,8 +1,7 @@
 'use client';
 
 import type { ReactElement, FormEvent } from 'react';
-import { useState, useCallback } from 'react';
-import { useRouter } from 'next/navigation';
+import { useState, useCallback, useTransition } from 'react';
 import {
   ArrowRight,
   ArrowLeft,
@@ -50,9 +49,8 @@ export function QuestionForm({
   sessionId,
   initialData,
 }: QuestionFormProps): ReactElement {
-  const router = useRouter();
+  const [isPending, startTransition] = useTransition();
   const [currentStep, setCurrentStep] = useState<FormStep>('name');
-  const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState<string | null>(null);
 
   // Form state
@@ -108,34 +106,35 @@ export function QuestionForm({
   }, []);
 
   const handleSubmit = useCallback(
-    async (e: FormEvent) => {
+    (e: FormEvent) => {
       e.preventDefault();
-      setIsSubmitting(true);
       setError(null);
 
-      try {
-        const formData: ProfileFormData = {
-          name,
-          age: age as number,
-          interests,
-          budget: budget as 'low' | 'medium' | 'high',
-          specialNotes: specialNotes || undefined,
-        };
+      // Use startTransition to keep UI responsive (fixes INP)
+      startTransition(async () => {
+        try {
+          const formData: ProfileFormData = {
+            name,
+            age: age as number,
+            interests,
+            budget: budget as 'low' | 'medium' | 'high',
+            specialNotes: specialNotes || undefined,
+          };
 
-        const result = await createOrUpdateProfile(sessionId, formData);
+          const result = await createOrUpdateProfile(sessionId, formData);
 
-        if (!result.success) {
-          throw new Error(result.error);
+          if (!result.success) {
+            throw new Error(result.error);
+          }
+
+          // Use window.location for reliable navigation (bypasses React routing issues)
+          window.location.href = `/workshop/${sessionId}/spinner`;
+        } catch (err) {
+          setError(
+            err instanceof Error ? err.message : 'Failed to save. Please try again.'
+          );
         }
-
-        // Use window.location for reliable navigation (bypasses React routing issues)
-        window.location.href = `/workshop/${sessionId}/spinner`;
-      } catch (err) {
-        setError(
-          err instanceof Error ? err.message : 'Failed to save. Please try again.'
-        );
-        setIsSubmitting(false);
-      }
+      });
     },
     [sessionId, name, age, interests, budget, specialNotes]
   );
@@ -325,8 +324,8 @@ export function QuestionForm({
         </Button>
 
         {currentStep === 'notes' ? (
-          <Button type="submit" disabled={isSubmitting}>
-            {isSubmitting ? (
+          <Button type="submit" disabled={isPending}>
+            {isPending ? (
               <>
                 <Loader2 className="mr-2 w-4 h-4 animate-spin" />
                 Sending to Elves...
