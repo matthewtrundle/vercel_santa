@@ -4,7 +4,16 @@ import { Quicksand, Mountains_of_Christmas } from 'next/font/google';
 import { Analytics } from '@vercel/analytics/react';
 import { SpeedInsights } from '@vercel/speed-insights/next';
 import { VercelToolbar } from '@vercel/toolbar/next';
+import { FlagValues } from 'flags/react';
 import { MusicPlayer } from '@/components/ui/music-player';
+import {
+  betaFeaturesFlag,
+  newReindeerAnimationsFlag,
+  aiModelUpgradeFlag,
+  recommendationAlgorithmFlag,
+  workshopLayoutFlag,
+  spinnerShowCoalFlag,
+} from '@/lib/flags';
 import './globals.css';
 
 // Soft, rounded body font - friendly and approachable
@@ -60,7 +69,17 @@ interface RootLayoutProps {
   children: ReactNode;
 }
 
-export default function RootLayout({ children }: RootLayoutProps): ReactElement {
+export default async function RootLayout({ children }: RootLayoutProps): Promise<ReactElement> {
+  // Resolve all flag values for analytics tracking
+  const flagValues = {
+    'beta-features': await betaFeaturesFlag(),
+    'new-reindeer-animations': await newReindeerAnimationsFlag(),
+    'ai-model-upgrade': await aiModelUpgradeFlag(),
+    'recommendation-algorithm': await recommendationAlgorithmFlag(),
+    'workshop-layout': await workshopLayoutFlag(),
+    'spinner-show-coal': await spinnerShowCoalFlag(),
+  };
+
   return (
     <html lang="en">
       <body
@@ -68,6 +87,7 @@ export default function RootLayout({ children }: RootLayoutProps): ReactElement 
       >
         {children}
         <MusicPlayer />
+        <FlagValues values={flagValues} />
         <Analytics />
         <SpeedInsights />
         {process.env.NODE_ENV === 'development' && <VercelToolbar />}
