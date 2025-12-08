@@ -5,16 +5,24 @@ import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ReindeerScene } from './reindeer-scenes';
 
-// Hook to fetch the reindeer animations flag
+// Hook to fetch the reindeer animations flag with timeout
 function useReindeerAnimations() {
   const [enhanced, setEnhanced] = useState(false);
 
   useEffect(() => {
-    // Check flag via API
-    fetch('/api/flags/reindeer-animations')
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+    fetch('/api/flags/reindeer-animations', { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => setEnhanced(data.enhanced ?? false))
-      .catch(() => setEnhanced(false));
+      .catch(() => setEnhanced(false))
+      .finally(() => clearTimeout(timeoutId));
+
+    return () => {
+      controller.abort();
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return enhanced;

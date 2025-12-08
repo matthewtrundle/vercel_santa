@@ -17,19 +17,25 @@ export default function SpinnerPage(): ReactElement {
   const [isLoading, setIsLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
 
-  // Fetch feature flag on mount
+  // Fetch feature flag on mount with timeout
   useEffect(() => {
     async function fetchFlag() {
       try {
-        // Use the Edge Config or default to false
-        // For client-side, we'll use a simple API call or default
-        const response = await fetch('/api/flags/spinner-coal');
+        // Add timeout to prevent hanging
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+        const response = await fetch('/api/flags/spinner-coal', {
+          signal: controller.signal,
+        });
+        clearTimeout(timeoutId);
+
         if (response.ok) {
           const data = await response.json();
           setShowCoal(data.showCoal ?? false);
         }
       } catch {
-        // Default to no coal on error
+        // Default to no coal on error or timeout
         setShowCoal(false);
       } finally {
         setIsLoading(false);

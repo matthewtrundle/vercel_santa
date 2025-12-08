@@ -8,15 +8,24 @@ import { motion } from 'motion/react';
 import { Gift, Scroll, Snowflake, Sparkles, TreePine, FlaskConical } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
-// Hook to fetch beta features flag
+// Hook to fetch beta features flag with timeout
 function useBetaFeatures() {
   const [isBeta, setIsBeta] = useState(false);
 
   useEffect(() => {
-    fetch('/api/flags/beta-features')
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), 2000);
+
+    fetch('/api/flags/beta-features', { signal: controller.signal })
       .then((res) => res.json())
       .then((data) => setIsBeta(data.enabled ?? false))
-      .catch(() => setIsBeta(false));
+      .catch(() => setIsBeta(false))
+      .finally(() => clearTimeout(timeoutId));
+
+    return () => {
+      controller.abort();
+      clearTimeout(timeoutId);
+    };
   }, []);
 
   return isBeta;
