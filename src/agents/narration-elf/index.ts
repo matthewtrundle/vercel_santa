@@ -1,7 +1,7 @@
 'use server';
 
 import { streamText, generateText } from 'ai';
-import { models } from '@/lib/ai';
+import { getTextModel, models } from '@/lib/ai';
 import type { NarrationElfInput, ScoredRecommendation } from '@/types';
 
 const NARRATION_ELF_SYSTEM_PROMPT = `You are the Narration Elf in Santa's Workshop. Your job is to write a magical, personalized letter from Santa to the gift recipient.
@@ -45,8 +45,11 @@ export async function runNarrationElf(
   const { profile, recommendations } = input;
 
   try {
+    // Get flag-controlled model
+    const model = await getTextModel();
+
     const { text } = await generateText({
-      model: models.fast,
+      model,
       messages: [
         {
           role: 'system',

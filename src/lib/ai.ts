@@ -1,4 +1,5 @@
 import { createOpenAICompatible } from '@ai-sdk/openai-compatible';
+import { aiModelUpgradeFlag } from './flags';
 
 // Vercel AI Gateway configuration
 // Uses AI_GATEWAY_API_KEY from Vercel dashboard
@@ -22,8 +23,16 @@ export const models = {
   // 2M context, $0.20/M input, $0.50/M output
   fast: gateway('xai/grok-4.1-fast-non-reasoning'),
 
-  // Alternative models available:
-  // reasoning: gateway('xai/grok-4.1-fast-reasoning'),  // For complex reasoning
-  // claude: gateway('anthropic/claude-sonnet-4.5'),     // Claude Sonnet
-  // gemini: gateway('google/gemini-3-pro-preview'),     // Gemini Pro
+  // Premium model for upgraded AI experience
+  // Used when ai-model-upgrade flag is enabled
+  premium: gateway('openai/gpt-4o'),
 } as const;
+
+/**
+ * Get the appropriate text model based on the ai-model-upgrade flag.
+ * Returns premium model (GPT-4o) when flag is enabled, otherwise fast model (Grok 4.1).
+ */
+export async function getTextModel() {
+  const useUpgrade = await aiModelUpgradeFlag();
+  return useUpgrade ? models.premium : models.fast;
+}

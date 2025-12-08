@@ -1,11 +1,26 @@
 'use client';
 
 import type { ReactElement } from 'react';
+import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { motion } from 'motion/react';
-import { Gift, Scroll, Snowflake, Sparkles, TreePine } from 'lucide-react';
+import { Gift, Scroll, Snowflake, Sparkles, TreePine, FlaskConical } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+// Hook to fetch beta features flag
+function useBetaFeatures() {
+  const [isBeta, setIsBeta] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/flags/beta-features')
+      .then((res) => res.json())
+      .then((data) => setIsBeta(data.enabled ?? false))
+      .catch(() => setIsBeta(false));
+  }, []);
+
+  return isBeta;
+}
 
 interface HeaderProps {
   sessionId?: string;
@@ -13,6 +28,7 @@ interface HeaderProps {
 
 export function Header({ sessionId }: HeaderProps): ReactElement {
   const pathname = usePathname();
+  const isBeta = useBetaFeatures();
 
   const isActive = (path: string) => pathname === path;
   const isWorkshop = pathname.startsWith('/workshop');
@@ -51,9 +67,22 @@ export function Header({ sessionId }: HeaderProps): ReactElement {
               </motion.div>
             </motion.div>
             <div className="hidden sm:block">
-              <span className="font-bold text-white text-lg drop-shadow-md">
-                Santa&apos;s Workshop
-              </span>
+              <div className="flex items-center gap-2">
+                <span className="font-bold text-white text-lg drop-shadow-md">
+                  Santa&apos;s Workshop
+                </span>
+                {isBeta && (
+                  <motion.span
+                    className="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-bold bg-purple-500 text-white rounded-full"
+                    initial={{ scale: 0 }}
+                    animate={{ scale: 1 }}
+                    transition={{ type: 'spring', stiffness: 500, damping: 30 }}
+                  >
+                    <FlaskConical className="w-3 h-3" />
+                    BETA
+                  </motion.span>
+                )}
+              </div>
               <span className="block text-xs text-red-200 -mt-0.5">
                 AI Gift Finder
               </span>

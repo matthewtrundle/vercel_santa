@@ -1,7 +1,7 @@
 'use server';
 
 import { generateText } from 'ai';
-import { models } from '@/lib/ai';
+import { getTextModel } from '@/lib/ai';
 import type {
   ProfileElfInput,
   ProfileElfOutput,
@@ -118,8 +118,11 @@ IMAGE ANALYSIS (supporting data, confidence: ${imageAnalysis.confidence}):
 
 Create the profile JSON. Pay special attention to any special notes from the parent as they often contain important hints about preferences or things to avoid.`;
 
+    // Get flag-controlled model
+    const model = await getTextModel();
+
     const { text } = await generateText({
-      model: models.fast,
+      model,
       messages: [
         {
           role: 'system',

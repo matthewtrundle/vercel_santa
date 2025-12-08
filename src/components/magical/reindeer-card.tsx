@@ -1,8 +1,24 @@
 'use client';
 
 import type { ReactElement } from 'react';
+import { useState, useEffect } from 'react';
 import { motion } from 'motion/react';
 import { ReindeerScene } from './reindeer-scenes';
+
+// Hook to fetch the reindeer animations flag
+function useReindeerAnimations() {
+  const [enhanced, setEnhanced] = useState(false);
+
+  useEffect(() => {
+    // Check flag via API
+    fetch('/api/flags/reindeer-animations')
+      .then((res) => res.json())
+      .then((data) => setEnhanced(data.enhanced ?? false))
+      .catch(() => setEnhanced(false));
+  }, []);
+
+  return enhanced;
+}
 
 export interface Reindeer {
   name: string;
@@ -92,6 +108,20 @@ export function ReindeerCard({
   className = '',
 }: ReindeerCardProps): ReactElement {
   const isRudolph = reindeer.name === 'Rudolph';
+  const enhancedAnimations = useReindeerAnimations();
+
+  // Animation variants based on flag
+  const hoverAnimation = enhancedAnimations
+    ? { scale: 1.08, y: -10, rotate: [-1, 1, -1, 0], transition: { rotate: { repeat: 2, duration: 0.2 } } }
+    : { scale: 1.03, y: -5 };
+
+  const bobAnimation = enhancedAnimations
+    ? { y: [-4, 4, -4], rotate: [-2, 2, -2] }
+    : { y: [-2, 2, -2] };
+
+  const bobTransition = enhancedAnimations
+    ? { duration: 2, repeat: Infinity, ease: 'easeInOut' as const }
+    : { duration: 3, repeat: Infinity, ease: 'easeInOut' as const };
 
   return (
     <motion.div
@@ -100,7 +130,7 @@ export function ReindeerCard({
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
       transition={{ delay: index * 0.1 }}
-      whileHover={{ scale: 1.03, y: -5 }}
+      whileHover={hoverAnimation}
     >
       {/* Animated background scene - window into another dimension */}
       <div className="absolute inset-0 rounded-2xl overflow-hidden">
@@ -165,8 +195,8 @@ export function ReindeerCard({
 
           {/* Main reindeer group with gentle bobbing */}
           <motion.g
-            animate={{ y: [-2, 2, -2] }}
-            transition={{ duration: 3, repeat: Infinity, ease: 'easeInOut' }}
+            animate={bobAnimation}
+            transition={bobTransition}
             filter={`url(#shadow-${index})`}
           >
             {/* Back legs */}

@@ -11,6 +11,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { GiftCard } from '@/components/results/gift-card';
 import { ShareButton } from '@/components/results/share-button';
 import { ResultsPageClient } from '@/components/results/results-page-client';
+import { workshopLayoutFlag } from '@/lib/flags';
 
 interface ResultsPageProps {
   params: Promise<{ sessionId: string }>;
@@ -96,9 +97,33 @@ export default async function ResultsPage({
   const sessionMetadata = session.metadata as Record<string, unknown> | null;
   const nicePoints = (sessionMetadata?.nicePoints as number) ?? 500; // Default to 500 if not set
 
+  // Get workshop layout from flag
+  const layout = await workshopLayoutFlag();
+
+  // Layout-specific styles
+  const layoutConfig = {
+    classic: {
+      container: 'max-w-4xl',
+      grid: 'grid md:grid-cols-2 gap-4',
+      cardStyle: 'default' as const,
+    },
+    modern: {
+      container: 'max-w-6xl',
+      grid: 'grid md:grid-cols-2 lg:grid-cols-3 gap-6',
+      cardStyle: 'default' as const,
+    },
+    minimal: {
+      container: 'max-w-2xl',
+      grid: 'flex flex-col gap-3',
+      cardStyle: 'compact' as const,
+    },
+  };
+
+  const config = layoutConfig[layout];
+
   return (
     <ResultsPageClient sessionId={sessionId} initialListCount={listItemGiftIds.length} giftCount={recs.length} nicePoints={nicePoints}>
-    <div className="max-w-4xl mx-auto py-8 px-4">
+    <div className={`${config.container} mx-auto py-8 px-4`}>
       {/* Header */}
       <div className="text-center mb-10">
         <div className="inline-flex items-center justify-center w-20 h-20 rounded-full bg-gradient-to-br from-red-100 to-green-100 mb-4">
@@ -149,7 +174,7 @@ export default async function ResultsPage({
             </span>
           )}
         </div>
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className={config.grid}>
           {hasRealData ? (
             recs.map((rec) => (
               <GiftCard
