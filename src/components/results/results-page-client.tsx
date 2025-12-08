@@ -11,7 +11,7 @@ interface ResultsPageClientProps {
   sessionId: string;
   initialListCount: number;
   giftCount: number;
-  budgetTier: 'budget' | 'moderate' | 'premium';
+  nicePoints: number;
   children: ReactNode;
 }
 
@@ -19,7 +19,7 @@ export function ResultsPageClient({
   sessionId,
   initialListCount,
   giftCount,
-  budgetTier,
+  nicePoints,
   children,
 }: ResultsPageClientProps): ReactElement {
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
@@ -67,7 +67,7 @@ export function ResultsPageClient({
         isOpen={isDrawerOpen}
         onClose={handleCloseDrawer}
         sessionId={sessionId}
-        budgetTier={budgetTier}
+        nicePoints={nicePoints}
         onItemRemoved={handleItemRemoved}
       />
 

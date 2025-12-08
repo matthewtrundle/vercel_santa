@@ -38,22 +38,15 @@ interface WishListDrawerProps {
   isOpen: boolean;
   onClose: () => void;
   sessionId: string;
-  budgetTier: 'budget' | 'moderate' | 'premium';
+  nicePoints: number;
   onItemRemoved?: () => void;
 }
-
-// Nice Points limits based on budget tier
-const NICE_POINTS_LIMITS: Record<'budget' | 'moderate' | 'premium', number> = {
-  budget: 25,
-  moderate: 75,
-  premium: 200,
-};
 
 export function WishListDrawer({
   isOpen,
   onClose,
   sessionId,
-  budgetTier,
+  nicePoints,
   onItemRemoved,
 }: WishListDrawerProps): ReactElement {
   const [items, setItems] = useState<WishListItem[]>([]);
@@ -120,8 +113,7 @@ export function WishListDrawer({
     0
   );
 
-  const nicePointsLimit = NICE_POINTS_LIMITS[budgetTier];
-  const isOverBudget = totalNicePoints > nicePointsLimit;
+  const isOverBudget = totalNicePoints > nicePoints;
 
   return (
     <AnimatePresence>
@@ -288,7 +280,7 @@ export function WishListDrawer({
                   <span className="text-gray-500">Your Budget:</span>
                   <span className="text-gray-600 flex items-center gap-1">
                     <span className="text-amber-500">&#9733;</span>
-                    {nicePointsLimit} Nice Points
+                    {nicePoints} Nice Points
                   </span>
                 </div>
 
@@ -303,7 +295,7 @@ export function WishListDrawer({
                     <div>
                       <p className="text-sm font-medium text-red-700">Too many Nice Points!</p>
                       <p className="text-xs text-red-600">
-                        You&apos;re {totalNicePoints - nicePointsLimit} Nice Points over your budget. Remove some gifts to proceed.
+                        You&apos;re {totalNicePoints - nicePoints} Nice Points over your budget. Remove some gifts to proceed.
                       </p>
                     </div>
                   </motion.div>

@@ -88,12 +88,16 @@ export default async function ResultsPage({
     notFound();
   }
 
-  const { profile, recommendations: recs, santaNote, listItemGiftIds } = data;
+  const { session, profile, recommendations: recs, santaNote, listItemGiftIds } = data;
   const recipientName = profile?.name ?? 'your recipient';
   const hasRealData = recs.length > 0;
 
+  // Get Nice Points from session metadata (set by spinner)
+  const sessionMetadata = session.metadata as Record<string, unknown> | null;
+  const nicePoints = (sessionMetadata?.nicePoints as number) ?? 500; // Default to 500 if not set
+
   return (
-    <ResultsPageClient sessionId={sessionId} initialListCount={listItemGiftIds.length} giftCount={recs.length} budgetTier={profile?.budgetTier ?? 'moderate'}>
+    <ResultsPageClient sessionId={sessionId} initialListCount={listItemGiftIds.length} giftCount={recs.length} nicePoints={nicePoints}>
     <div className="max-w-4xl mx-auto py-8 px-4">
       {/* Header */}
       <div className="text-center mb-10">
